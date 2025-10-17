@@ -19,7 +19,7 @@ export default function DashboardPage() {
     <div className="flex min-h-screen bg-gray-100">
       <div className="w-full flex flex-col h-screen space-y-6 p-4">
         {/* Bagian atas: Header & Quick Action */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 overflow-y-auto">
+          <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-200 overflow-y-auto">
             <header className="mb-6">
               <h1 className="text-3xl font-bold text-[#000000]">
                 Selamat datang, Admin!
@@ -70,7 +70,7 @@ export default function DashboardPage() {
 
           {/* Bagian bawah: Riwayat Laporan */}
           <div className="bg-white rounded-2xl shadow overflow-hidden border border-gray-200 overflow-y-auto">
-            <section className="p-6">
+            <section className="p-8">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-[#000000]">
                   Riwayat Laporan Hasil Analisis
