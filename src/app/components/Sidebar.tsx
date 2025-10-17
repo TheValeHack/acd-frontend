@@ -102,7 +102,7 @@ export default function Sidebar() {
           </div>}
         </div>
         <div>
-          <button className="group w-full border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white text-xs font-semibold py-2 rounded-md transition">
+          <button className="group w-full border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white text-xs font-semibold py-2 rounded-md transition cursor-pointer">
             <div className="flex items-center justify-center space-x-2">
               <img
                 src="/images/logout.png"
