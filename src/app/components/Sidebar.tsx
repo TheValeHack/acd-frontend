@@ -44,7 +44,7 @@ export default function Sidebar() {
               <Image
                 src="/images/chevron-left.svg"
                 alt="Dekorasi Sidebar"
-                className="w-3 h-3"
+                className={`w-3 h-3 ${isExpanded ? "" : "rotate-180"}`}
                 width={100}
                 height={100}
               />
