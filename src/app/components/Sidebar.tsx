@@ -1,9 +1,11 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function Sidebar() {
   const pathname = usePathname(); // ambil URL aktif
+  const router = useRouter();
 
   const menus = [
     {
@@ -50,6 +52,7 @@ export default function Sidebar() {
             return (
               <li
                 key={menu.name}
+                onClick={()=> router.push(menu.href)}
                 className={`flex items-center space-x-2 p-2 rounded-md transition group cursor-pointer ${
                   isActive
                     ? "bg-orange-500 text-white"
@@ -65,14 +68,13 @@ export default function Sidebar() {
                       : "group-hover:brightness-0 group-hover:invert"
                   }`}
                 />
-                <a
-                  href={menu.href}
+                <p
                   className={`text-xs font-medium ${
                     isActive ? "text-white" : "group-hover:text-white"
                   }`}
                 >
                   {menu.name}
-                </a>
+                </p>
               </li>
             );
           })}

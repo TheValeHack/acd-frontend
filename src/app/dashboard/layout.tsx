@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Sidebar from "../components/Sidebar";
 
 export const metadata: Metadata = {
   title: "Dashboard Analisis Serbuk Bor",
@@ -11,9 +12,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    // Layout khusus dashboard - tidak mempengaruhi halaman login
-    <div>
-      {children}
+    <div className="flex min-h-screen bg-gray-100">
+      <Sidebar />
+      <main className="flex-1 p-8">{children}</main>
     </div>
   );
 }

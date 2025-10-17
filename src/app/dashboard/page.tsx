@@ -16,18 +16,11 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto flex gap-4 min-h-screen">
-        
-        {/* Sidebar */}
-        <Sidebar />
-
-        {/* Konten utama */}
-        <div className="w-4/5 flex flex-col h-screen space-y-4 p-4">
-          
-          {/* Bagian atas: Header & Quick Action */}
-          <div className="flex-1 bg-white rounded-lg p-4 shadow-sm border border-gray-200 overflow-y-auto">
-            <header className="mb-4">
+    <div className="flex min-h-screen bg-gray-100">
+      <div className="w-full flex flex-col h-screen space-y-6 p-4">
+        {/* Bagian atas: Header & Quick Action */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 overflow-y-auto">
+            <header className="mb-6">
               <h1 className="text-3xl font-bold text-[#000000]">
                 Selamat datang, Admin!
               </h1>
@@ -37,9 +30,8 @@ export default function DashboardPage() {
                 sebagai bahan pendukung keputusan.<br />
               </p>
             </header>
-
             <section>
-              <h2 className="text-xl font-semibold text-[#000000] mb-3">Quick Action</h2>
+              <h2 className="text-xl font-bold text-[#000000] mb-3">Quick Action</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 min-h-[100px]">
                 {quickActions.map((action, index) => (
                   <a
@@ -49,8 +41,9 @@ export default function DashboardPage() {
                       action.color === "blue"
                         ? "bg-white hover:bg-[#ED5E24]"
                         : "bg-white hover:bg-[#ED5E24]"
-                    } text-black p-4 rounded-2xl 
-                    shadow-[0_4px_12px_2px_rgba(0,0,0,0.1)] 
+                    } text-black p-4 rounded-xl 
+                    border-2 border-gray-200
+                    hover:border-[#ED5E24]
                     hover:shadow-[0_6px_18px_3px_rgba(0,0,0,0.2)]
                     transition-all duration-300 flex items-center gap-4`}
                   >
@@ -62,7 +55,7 @@ export default function DashboardPage() {
                       />
                     </div>
                     <div className="text-left text-[#404040] transition duration-300 group-hover:text-white">
-                      <h3 className="font-medium text-sm font-semibold group-hover:text-white">
+                      <h3 className="text-sm font-semibold group-hover:text-white">
                         {action.title}
                       </h3>
                       <p className="text-xs opacity-90 mt-1 group-hover:text-white">
@@ -76,10 +69,10 @@ export default function DashboardPage() {
           </div>
 
           {/* Bagian bawah: Riwayat Laporan */}
-          <div className="flex-1 bg-white rounded-lg shadow overflow-hidden border border-gray-200 overflow-y-auto">
-            <section className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-xl font-semibold text-[#000000]">
+          <div className="bg-white rounded-2xl shadow overflow-hidden border border-gray-200 overflow-y-auto">
+            <section className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-[#000000]">
                   Riwayat Laporan Hasil Analisis
                 </h2>
                 <button className="flex items-center text-sm text-[#2B2B2B] hover:underline font-medium gap-1">
@@ -95,7 +88,7 @@ export default function DashboardPage() {
                       {tableHeaders.map((header, index) => (
                         <th
                           key={index}
-                          className="px-3 py-2 text-left text-xs font-medium text-[#000000] uppercase tracking-wider font-semibold"
+                          className="px-3 py-2 text-left text-xs text-[#000000] uppercase tracking-wider font-semibold"
                         >
                           {header}
                         </th>
@@ -139,8 +132,6 @@ export default function DashboardPage() {
               </div>
             </section>
           </div>
-
-        </div>
       </div>
     </div>
   );
