@@ -10,7 +10,7 @@ export default function Home() {
     const [password, setPassword] = useState("");
 
   return (
-    <div className="relative font-sans flex items-center justify-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
+    <div className="relative font-sans flex items-center justify-center min-h-screen gap-16">
     <div className="absolute top-0 left-0 w-[60%] h-full -z-10">
         <Image
             src="/images/login_bg_2.png"
@@ -20,7 +20,7 @@ export default function Home() {
             priority
         />
     </div>
-      <div className="bg-[#FFFFFF] w-[83%] max-w-[1400px] aspect-3/2  gap-8 rounded-3xl flex justify-between py-8 pl-14">
+      <div className="bg-[#FFFFFF] w-[60%] max-w-[1400px] aspect-3/2  gap-8 rounded-3xl flex justify-between pl-14">
         <div className="flex flex-col items-center justify-center bg-white-500 flex-1">
             <Image
               className="w-28 h-28"
@@ -114,7 +114,7 @@ export default function Home() {
             </div>
             <button className={"w-full py-2 rounded-lg mt-4 transition-colors " + ((username.length == 0 && password.length == 0) ? "bg-[#E9EAEB] text-[#A6A6A6]" : "bg-[#ED5E24] text-white hover:bg-[#b33503]")}>Masuk</button>
         </div>
-        <div className="flex items-center w-[50%] rounded-3xl overflow-hidden">
+        <div className="flex items-center w-[50%] rounded-3xl overflow-hidden py-8">
             <Image
               className="w-full h-full"
               src="/images/login_bg.png"
