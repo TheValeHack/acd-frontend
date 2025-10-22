@@ -5,7 +5,25 @@ const data = [
     kedalaman: '1200 - 1400',
     segmentasi: 'Lumpur 10%, Siltstone 50%, Sandstone 30%, Shale 10%',
   },
-]
+  {
+    tanggal: "2025-10-21",
+    lokasi: "Bandung",
+    kedalaman: "15 km",
+    segmentasi: "Sesar Lembang",
+  },
+  {
+    tanggal: "2025-10-22",
+    lokasi: "Yogyakarta",
+    kedalaman: "12 km",
+    segmentasi: "Zona Subduksi Jawa",
+  },
+  {
+    tanggal: "2025-10-23",
+    lokasi: "Surabaya",
+    kedalaman: "8 km",
+    segmentasi: "Sesar Kendeng",
+  },
+];
 
 export default function tableReport() {
   return (
@@ -27,7 +45,7 @@ export default function tableReport() {
               <td className="px-4 py-2">{row.tanggal}</td>
               <td className="px-4 py-2">{row.lokasi}</td>
               <td className="px-4 py-2">{row.kedalaman}</td>
-              <td className="px-4 py-2">{row.segmentasi}</td>
+              <td className="px-4 py-2"></td>
               <td className="px-4 py-2">{row.segmentasi}</td>
               <td className="px-4 py-2 space-x-2">
                 <button className="text-blue-500">👁️</button>
