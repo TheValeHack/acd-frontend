@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import { reportHistory } from "../data/reportHistory";
 import { quickActions } from "../data/quickActions";
