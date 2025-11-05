@@ -84,7 +84,7 @@ export default function DetailPage({ id = 0 }: DetailPageProps) {
                     </div>
 
                     {/* Persentase Bebatuan - 60% */}
-                    <div className="basis-[60%] bg-white border border-gray-200 rounded-xl p-4 overflow-auto">
+                    <div className="basis-[60%] bg-white border-2 border-[#E9EAEB] rounded-xl p-4 overflow-auto">
                         <h2 className="text-2xl font-bold text-black">Persentase Bebatuan</h2>
                         <table className="text-sm text-gray-700 w-full rounded-md mt-9">
                             <thead className="bg-[#FFFFFF]">
@@ -132,7 +132,7 @@ export default function DetailPage({ id = 0 }: DetailPageProps) {
 
 
             {/* Hasil Segmentasi */}
-            <section className="bg-white border border-gray-200 rounded-xl p-4">
+            <section className="bg-white border-2 border-[#E9EAEB] rounded-xl p-4">
                 <h2 className="text-2xl font-bold text-black">Hasil Segmentasi</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
                     <div>
