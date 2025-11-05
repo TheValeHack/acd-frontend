@@ -1,31 +1,35 @@
-const data = [
-  {
-    tanggal: '20-02-2023',
-    lokasi: 'Sumur A-01',
-    kedalaman: '1200 - 1400',
-    segmentasi: 'Lumpur 10%, Siltstone 50%, Sandstone 40%',
-  },
-  {
-    tanggal: "2025-10-21",
-    lokasi: "Bandung",
-    kedalaman: "15 km",
-    segmentasi: "Sesar Lembang, dasdadsa, dsadasd",
-  },
-  {
-    tanggal: "2025-10-22",
-    lokasi: "Yogyakarta",
-    kedalaman: "12 km",
-    segmentasi: "Zona Subduksi Jawa, asdasdasd, asdasda",
-  },
-  {
-    tanggal: "2025-10-23",
-    lokasi: "Surabaya",
-    kedalaman: "8 km",
-    segmentasi: "Sesar Kendeng, adsadas, asdasdads",
-  },
-];
+"use client";
+import { useRouter } from "next/navigation";
+
 
 export default function tableReport() {
+  const router = useRouter();
+  const data = [
+    {
+      tanggal: '20-02-2023',
+      lokasi: 'Sumur A-01',
+      kedalaman: '1200 - 1400',
+      segmentasi: 'Lumpur 10%, Siltstone 50%, Sandstone 40%',
+    },
+    {
+      tanggal: "2025-10-21",
+      lokasi: "Bandung",
+      kedalaman: "15 km",
+      segmentasi: "Sesar Lembang, dasdadsa, dsadasd",
+    },
+    {
+      tanggal: "2025-10-22",
+      lokasi: "Yogyakarta",
+      kedalaman: "12 km",
+      segmentasi: "Zona Subduksi Jawa, asdasdasd, asdasda",
+    },
+    {
+      tanggal: "2025-10-23",
+      lokasi: "Surabaya",
+      kedalaman: "8 km",
+      segmentasi: "Sesar Kendeng, adsadas, asdasdads",
+    },
+  ];
   return (
     <div className="bg-white shadow  overflow-hidden">
       <table className="min-w-full text-xs">
@@ -57,27 +61,36 @@ export default function tableReport() {
                 </ul>
               </td>
               <td className="px-4 py-2 space-x-2">
-                <button className="hover:scale-110">
+                <div
+                  onClick={() => router.push(`/laporan/${idx}`)}
+                  className="hover:scale-110 inline-block cursor-pointer"
+                >
                   <img 
                     src="images/detail.png" 
                     alt="Detail" 
-                    className="w-5 h-5 inline-block" 
+                    className="w-5 h-5" 
                   />
-                </button>
-                <button className="hover:scale-110">
+                </div>
+                <div
+                  onClick={() => router.push(`/laporan/${idx}`)}
+                  className="hover:scale-110 inline-block cursor-pointer"
+                >
                   <img 
                     src="images/edit.png" 
-                    alt="Edit" 
-                    className="w-5 h-5 inline-block" 
+                    alt="Detail" 
+                    className="w-5 h-5" 
                   />
-                </button>
-                <button className="hover:scale-110">
+                </div>
+                <div
+                  onClick={() => router.push(`/laporan/${idx}`)}
+                  className="hover:scale-110 inline-block cursor-pointer"
+                >
                   <img 
                     src="images/hapus.png" 
-                    alt="Hapus" 
-                    className="w-5 h-5 inline-block" 
+                    alt="Detail" 
+                    className="w-5 h-5" 
                   />
-                </button>
+                </div>
               </td>
             </tr>
           ))}
