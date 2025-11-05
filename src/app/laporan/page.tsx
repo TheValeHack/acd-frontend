@@ -39,7 +39,7 @@ export default function LaporanPage() {
                 key={page}
                 className={`w-8 h-8 rounded-full font-medium border border-gray-300 transition-transform duration-200 
                     ${page === 1 
-                    ? 'bg-orange-500 text-white scale-125'  // Aktif
+                    ? 'bg-[#ED5E24] text-white scale-125'  // Aktif
                     : 'bg-white text-black hover:bg-orange-200 hover:scale-105' // Nonaktif
                     }`}
                 >

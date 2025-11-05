@@ -5,6 +5,7 @@ import Sidebar from "../components/Sidebar";
 import { reportHistory } from "../data/reportHistory";
 import { quickActions } from "../data/quickActions";
 import { tableHeaders } from "../data/tableHeaders";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const handleViewReport = (reportId: number) => {
@@ -83,14 +84,16 @@ export default function DashboardPage() {
               <h2 className="text-xl font-bold text-[#000000]">
                 Riwayat Laporan Hasil Analisis
               </h2>
-              <button className="flex items-center text-sm text-[#2B2B2B] hover:underline font-medium gap-1">
-                Lihat Selengkapnya
-                <img
-                  src="/images/arrow-right.png"
-                  alt="arrow right"
-                  className="w-4 h-4"
-                />
-              </button>
+              <Link href="/laporan">
+                <button className="flex items-center text-sm text-[#2B2B2B] hover:underline font-medium gap-1">
+                  Lihat Selengkapnya
+                  <img
+                    src="/images/arrow-right.png"
+                    alt="arrow right"
+                    className="w-4 h-4"
+                  />
+                </button>
+              </Link>
             </div>
 
             <div className="overflow-x-auto">
@@ -112,7 +115,7 @@ export default function DashboardPage() {
                     <tr
                       key={report.id}
                       className={`hover:bg-gray-50 ${
-                        index % 2 === 0 ? "bg-orange-50" : "bg-white"
+                        index % 2 === 0 ? "bg-[#FDEEE7]" : "bg-white"
                       }`}
                     >
                       <td className="px-3 py-3 whitespace-nowrap text-xs text-[#000000]">
