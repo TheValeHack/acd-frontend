@@ -3,6 +3,6 @@ export const tableHeaders = [
   "Lokasi sumur",
   "Kedalaman (m)",
   "Hasil segmentasi",
-  "Parameter Batuan",
+  "Persentase Batuan",
   "Aksi"
 ];

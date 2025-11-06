@@ -10,7 +10,7 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const res = await fetch(process.env.API_URL + "/auth/login", {
+        const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -28,7 +28,7 @@ const handler = NextAuth({
         return {
           id: data.user?.id || 1,
           email: credentials?.email,
-          name: data.user?.username || "User",
+          username: data.user?.username || "User",
           token: data.token, // penting!
         };
       },

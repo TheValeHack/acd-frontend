@@ -6,8 +6,15 @@ import { reportHistory } from "../data/reportHistory";
 import { quickActions } from "../data/quickActions";
 import { tableHeaders } from "../data/tableHeaders";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { useFetch } from "@/hooks/useFetch";
+import Image from "next/image";
 
 export default function DashboardPage() {
+  const wellFetch = useFetch("/well",)
+  const analysisFetch = useFetch("/analysis")
+
+
   const handleViewReport = (reportId: number) => {
     console.log("View report:", reportId);
   };
@@ -111,7 +118,9 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {reportHistory.map((report, index) => (
+                  { !(analysisFetch.data?.data?.length > 0) ? (
+                    <p className="mt-5">Tidak ada data ditemukan</p>
+                  ) : analysisFetch.data?.data?.map((report: any, index: any) => (
                     <tr
                       key={report.id}
                       className={`hover:bg-gray-50 ${
@@ -119,22 +128,27 @@ export default function DashboardPage() {
                       }`}
                     >
                       <td className="px-3 py-3 whitespace-nowrap text-xs text-[#000000]">
-                        {report.tanggal}
+                        {(new Date(report.created_at).toLocaleDateString())}
                       </td>
                       <td className="px-3 py-3 whitespace-nowrap text-xs font-medium text-[#000000]">
-                        {report.lokasiSumur}
+                        {wellFetch.data?.data?.filter((item: any) => item.id == report.well_id)[0]?.name}
                       </td>
                       <td className="px-3 py-3 whitespace-nowrap text-xs text-[#000000]">
-                        {report.kedalaman}
+                        {report.vertical_depth}
                       </td>
                       <td className="px-3 py-3 whitespace-nowrap text-xs text-[#000000]">
-                        {report.hasilSegmentasi}
+                        <Image
+                          src={report.image}
+                          alt="analysis image"
+                          width={100}
+                          height={100}
+                          className="w-24 h-16 rounded-lg"
+                        />
                       </td>
                       <td className="px-3 py-3 text-xs text-[#000000]">
                         <ul className="list-disc pl-4">
-                          {report.parameterBatuan.map((param, i) => (
-                            <li key={i}>{param}</li>
-                          ))}
+                          <li>Siltstone {report.siltstone_prcnt}%</li>
+                          <li>Sandstone {report.siltstone_prcnt}%</li>
                         </ul>
                       </td>
                       <td className="px-3 py-3 whitespace-nowrap text-xs font-medium">

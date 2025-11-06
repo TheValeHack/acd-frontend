@@ -1,12 +1,14 @@
 "use client";
 
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Sidebar() {
+  const { data: session } = useSession();
   const pathname = usePathname(); // ambil URL aktif
   const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(true); // Ganti dengan state jika ingin menambahkan fungsionalitas expand/collapse
@@ -58,9 +60,9 @@ export default function Sidebar() {
           {menus.map((menu) => {
             const isActive = pathname === menu.href; // cek apakah halaman aktif
             return (
+              <Link href={menu.href} >
               <li
                 key={menu.name}
-                onClick={()=> router.push(menu.href)}
                 className={`flex items-center space-x-2 p-2 ${isExpanded ? "" : "justify-center"} rounded-md transition group cursor-pointer ${
                   isActive
                     ? "bg-orange-500 text-white"
@@ -84,6 +86,7 @@ export default function Sidebar() {
                   {menu.name}
                 </p>}
               </li>
+              </Link>
             );
           })}
         </ul>
@@ -98,8 +101,8 @@ export default function Sidebar() {
             className="w-10 h-10 rounded-full object-cover"
           />
           {isExpanded && <div className="text-left">
-            <p className="text-sm font-semibold text-gray-800">Admin User</p>
-            <p className="text-xs text-gray-500">admin@example.com</p>
+            <p className="text-sm font-semibold text-gray-800">{ session?.user?.username }</p>
+            <p className="text-xs text-gray-500">{ session?.user?.email }</p>
           </div>}
         </div>
         <div>
