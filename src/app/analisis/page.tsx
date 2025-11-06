@@ -1,8 +1,8 @@
 "use client";
 
 import Image from 'next/image';
-import Sidebar from '../components/Sidebar';
-import UploadArea from '../components/UploadArea';
+import Sidebar from '../../components/Sidebar';
+import UploadArea from '../../components/UploadArea';
 
 export default function AnalisisPage() {
   return (

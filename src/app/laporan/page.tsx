@@ -1,5 +1,5 @@
-import Sidebar from '../components/Sidebar'
-import Table from '../components/tableReport'
+import Sidebar from '../../components/Sidebar'
+import Table from '../../components/tableReport'
 
 export default function LaporanPage() {
   return (

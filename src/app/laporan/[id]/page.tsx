@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import DetailPage from "../../components/DetailPage";
+import DetailPage from "../../../components/DetailPage";
 
 export default function LaporanDetailRoute() {
   const { id } = useParams();
