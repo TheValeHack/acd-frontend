@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import DeleteModal from "./DeleteModal";
 import EditModal from "./EditModal";
+import { useSession } from "next-auth/react";
 
 
 export default function TableReport({
@@ -17,6 +18,7 @@ export default function TableReport({
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState<number | null>(null);
+  const { data: session } = useSession();
 
   // STATE untuk EditModal
   const [showEditModal, setShowEditModal] = useState(false);
@@ -31,10 +33,33 @@ export default function TableReport({
     setShowDeleteModal(true); // buka modal
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (selectedReportId) {
-      console.log("Delete confirmed for report:", selectedReportId);
-      // TODO: lakukan aksi delete ke backend di sini
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/reports/${selectedReportId}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session?.accessToken}`, // token dari NextAuth
+            },
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error("Gagal menghapus data");
+        }
+
+        // refresh data atau update state
+        router.refresh(); // kalau pakai App Router
+        // atau setAnalysisData(prev => prev.filter(r => r.id !== selectedReportId))
+
+        console.log("Delete success:", selectedReportId);
+      } catch (err) {
+        console.error(err);
+        alert("Terjadi kesalahan saat menghapus data");
+      }
     }
     setShowDeleteModal(false);
     setSelectedReportId(null);

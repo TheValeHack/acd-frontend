@@ -1,12 +1,12 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
 import { reportHistory } from "../data/reportHistory";
 import { quickActions } from "../data/quickActions";
 import { tableHeaders } from "../data/tableHeaders";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
 import { useFetch } from "@/hooks/useFetch";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -18,6 +18,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const wellFetch = useFetch("/well",)
   const analysisFetch = useFetch("/analysis")
+  const { data: session } = useSession();
 
   // state untuk delete
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -37,14 +38,38 @@ export default function DashboardPage() {
     setShowDeleteModal(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (selectedReportId) {
-      console.log("Delete confirmed for report:", selectedReportId);
-      // TODO: aksi delete ke backend
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/reports/${selectedReportId}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session?.accessToken}`, // token dari NextAuth
+            },
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error("Gagal menghapus data");
+        }
+
+        // refresh data atau update state
+        router.refresh(); // kalau pakai App Router
+        // atau setAnalysisData(prev => prev.filter(r => r.id !== selectedReportId))
+
+        console.log("Delete success:", selectedReportId);
+      } catch (err) {
+        console.error(err);
+        alert("Terjadi kesalahan saat menghapus data");
+      }
     }
     setShowDeleteModal(false);
     setSelectedReportId(null);
   };
+
 
   const cancelDelete = () => {
     setShowDeleteModal(false);
