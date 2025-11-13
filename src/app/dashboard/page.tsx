@@ -9,18 +9,61 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useFetch } from "@/hooks/useFetch";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+// import modal/detail components
+import DeleteModal from "../../components/DeleteModal";
+import EditModal from "../../components/EditModal";
 
 export default function DashboardPage() {
+  const router = useRouter();
   const wellFetch = useFetch("/well",)
   const analysisFetch = useFetch("/analysis")
 
+  // state untuk delete
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedReportId, setSelectedReportId] = useState<number | null>(null);
+
+  // state untuk edit
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editData, setEditData] = useState<any | null>(null);
 
   const handleViewReport = (reportId: number) => {
-    console.log("View report:", reportId);
+    router.push(`/laporan/${reportId}`);
   };
 
+
   const handleDeleteReport = (reportId: number) => {
-    console.log("Delete report:", reportId);
+    setSelectedReportId(reportId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (selectedReportId) {
+      console.log("Delete confirmed for report:", selectedReportId);
+      // TODO: aksi delete ke backend
+    }
+    setShowDeleteModal(false);
+    setSelectedReportId(null);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setSelectedReportId(null);
+  };
+
+  const handleEditReport = (report: any) => {
+    setEditData({
+      tanggal: new Date(report.created_at).toLocaleDateString(),
+      lokasi: wellFetch.data?.data?.filter((item: any) => item.id == report.well_id)[0]?.name,
+      kedalaman: report.vertical_depth,
+      segmentasi: "Segmentasi placeholder",
+    });
+    setShowEditModal(true);
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setEditData(null);
   };
 
   return (
@@ -160,7 +203,7 @@ export default function DashboardPage() {
                               className="w-5 h-5 hover:opacity-70 transition"
                             />
                           </button>
-                          <button>
+                          <button onClick={() => handleEditReport(report)}>
                             <img
                               src="/images/edit.png"
                               alt="Edit"
@@ -184,6 +227,16 @@ export default function DashboardPage() {
           </section>
         </div>
       </div>
+      {/* Delete Modal */}
+      {showDeleteModal && (
+        <DeleteModal onConfirm={confirmDelete} onCancel={cancelDelete} />
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && editData && (
+        <EditModal data={editData} onClose={closeEditModal} />
+      )}
+
     </div>
   );
 }
