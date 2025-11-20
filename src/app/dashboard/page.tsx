@@ -1,26 +1,94 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
 import { reportHistory } from "../data/reportHistory";
 import { quickActions } from "../data/quickActions";
 import { tableHeaders } from "../data/tableHeaders";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
 import { useFetch } from "@/hooks/useFetch";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+// import modal/detail components
+import DeleteModal from "../../components/DeleteModal";
+import EditModal from "../../components/EditModal";
 
 export default function DashboardPage() {
+  const router = useRouter();
   const wellFetch = useFetch("/well",)
   const analysisFetch = useFetch("/analysis")
+  const { data: session } = useSession();
 
+  // state untuk delete
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedReportId, setSelectedReportId] = useState<number | null>(null);
+
+  // state untuk edit
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editData, setEditData] = useState<any | null>(null);
 
   const handleViewReport = (reportId: number) => {
-    console.log("View report:", reportId);
+    router.push(`/laporan/${reportId}`);
   };
 
+
   const handleDeleteReport = (reportId: number) => {
-    console.log("Delete report:", reportId);
+    setSelectedReportId(reportId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (selectedReportId) {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/reports/${selectedReportId}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session?.accessToken}`, // token dari NextAuth
+            },
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error("Gagal menghapus data");
+        }
+
+        // refresh data atau update state
+        router.refresh(); // kalau pakai App Router
+        // atau setAnalysisData(prev => prev.filter(r => r.id !== selectedReportId))
+
+        console.log("Delete success:", selectedReportId);
+      } catch (err) {
+        console.error(err);
+        alert("Terjadi kesalahan saat menghapus data");
+      }
+    }
+    setShowDeleteModal(false);
+    setSelectedReportId(null);
+  };
+
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setSelectedReportId(null);
+  };
+
+  const handleEditReport = (report: any) => {
+    setEditData({
+      tanggal: new Date(report.created_at).toLocaleDateString(),
+      lokasi: wellFetch.data?.data?.filter((item: any) => item.id == report.well_id)[0]?.name,
+      kedalaman: report.vertical_depth,
+      segmentasi: "Segmentasi placeholder",
+    });
+    setShowEditModal(true);
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setEditData(null);
   };
 
   useEffect(() => {
@@ -166,7 +234,7 @@ export default function DashboardPage() {
                               className="w-5 h-5 hover:opacity-70 transition"
                             />
                           </button>
-                          <button>
+                          <button onClick={() => handleEditReport(report)}>
                             <img
                               src="/images/edit.png"
                               alt="Edit"
@@ -191,6 +259,16 @@ export default function DashboardPage() {
           </section>
         </div>
       </div>
+      {/* Delete Modal */}
+      {showDeleteModal && (
+        <DeleteModal onConfirm={confirmDelete} onCancel={cancelDelete} />
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && editData && (
+        <EditModal data={editData} onClose={closeEditModal} />
+      )}
+
     </div>
   );
 }
