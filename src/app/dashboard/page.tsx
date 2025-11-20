@@ -23,6 +23,11 @@ export default function DashboardPage() {
     console.log("Delete report:", reportId);
   };
 
+  useEffect(() => {
+    console.log(wellFetch.loading, wellFetch.data)
+    console.log(analysisFetch.loading, analysisFetch.data)
+  }, [])
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       <div className="w-full flex flex-col h-screen space-y-6 p-4">
@@ -118,7 +123,8 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  { !(analysisFetch.data?.data?.length > 0) ? (
+                  {
+                   ( analysisFetch.loading && wellFetch.loading ) ? (<p>loading....</p>) :   !(analysisFetch.data?.data?.length > 0) ? (
                     <p className="mt-5">Tidak ada data ditemukan</p>
                   ) : analysisFetch.data?.data?.map((report: any, index: any) => (
                     <tr
@@ -177,7 +183,8 @@ export default function DashboardPage() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  ))
+                  }
                 </tbody>
               </table>
             </div>

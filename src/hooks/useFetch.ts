@@ -17,7 +17,9 @@ export function useFetch<T = any>(
   const [loading, setLoading] = useState<boolean>(options.autoFetch ?? true);
 
   const fetchData = useCallback(async () => {
-    setLoading(true);
+    if(loading != false){
+      setLoading(true);
+    }
     setError(null);
 
     try {
@@ -49,11 +51,11 @@ export function useFetch<T = any>(
     } finally {
       setLoading(false);
     }
-  }, [endpoint, options]);
+  }, [endpoint]);
 
   useEffect(() => {
     if (options.autoFetch) fetchData();
-  }, [fetchData, options.autoFetch]);
+  }, [fetchData]);
 
   return { data, error, loading, refetch: fetchData };
 }

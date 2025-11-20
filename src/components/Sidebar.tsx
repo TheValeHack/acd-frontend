@@ -60,7 +60,7 @@ export default function Sidebar() {
           {menus.map((menu) => {
             const isActive = pathname === menu.href; // cek apakah halaman aktif
             return (
-              <Link href={menu.href} >
+              <Link key={menu.href} href={menu.href} >
               <li
                 key={menu.name}
                 className={`flex items-center space-x-2 p-2 ${isExpanded ? "" : "justify-center"} rounded-md transition group cursor-pointer ${
