@@ -13,6 +13,7 @@ import {
 } from "chart.js";
 import { Pie } from "react-chartjs-2";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import { formatPercent } from "@/utils/formatPercent";
 
 
 type DetailPageProps = {
@@ -77,7 +78,7 @@ export default function DetailPage({ id }: DetailPageProps) {
     labels: ["Siltstone", "Sandstone"],
     datasets: [
       {
-        data: [analysis.data.siltstone_prcnt, analysis.data.sandstone_prcnt],
+        data: [formatPercent(analysis.data.siltstone_prcnt), formatPercent(analysis.data.sandstone_prcnt)],
         backgroundColor: ["#7086FD", "#6FD195"],
         borderWidth: 1,
       },
@@ -146,11 +147,11 @@ export default function DetailPage({ id }: DetailPageProps) {
                   <tbody>
                     <tr className="bg-[#FDEEE7]">
                       <td className="px-3 py-2">Siltstone</td>
-                      <td className="px-3 py-2">{a.siltstone_prcnt}%</td>
+                      <td className="px-3 py-2">{formatPercent(a.siltstone_prcnt)}%</td>
                     </tr>
                     <tr className="bg-white">
                       <td className="px-3 py-2">Sandstone</td>
-                      <td className="px-3 py-2">{a.sandstone_prcnt}%</td>
+                      <td className="px-3 py-2">{formatPercent(a.sandstone_prcnt)}%</td>
                     </tr>
                   </tbody>
                 </table>

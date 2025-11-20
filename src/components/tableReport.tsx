@@ -5,6 +5,7 @@ import { useState } from "react";
 import DeleteModal from "./DeleteModal";
 import EditModal from "./EditModal";
 import { useSession } from "next-auth/react";
+import { formatPercent } from "@/utils/formatPercent";
 
 
 export default function TableReport({
@@ -189,8 +190,8 @@ export default function TableReport({
 
                 <td className="px-3 py-3 text-xs text-[#000000]">
                   <ul className="list-disc pl-4">
-                    <li>Siltstone {report.siltstone_prcnt}%</li>
-                    <li>Sandstone {report.sandstone_prcnt}%</li>
+                    <li>Siltstone {formatPercent(report.siltstone_prcnt)}%</li>
+                    <li>Sandstone {formatPercent(report.sandstone_prcnt)}%</li>
                   </ul>
                 </td>
 

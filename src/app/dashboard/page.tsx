@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 // import modal/detail components
 import DeleteModal from "../../components/DeleteModal";
 import EditModal from "../../components/EditModal";
+import { formatPercent } from "@/utils/formatPercent";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -274,7 +275,7 @@ export default function DashboardPage() {
                             src={
                                 report?.image && (report.image.startsWith('http://') || report.image.startsWith('https://'))
                                     ? report.image
-                                    : `${process.env.NEXT_PUBLIC_API_URL}${report?.image}`
+                                    : `${process.env.NEXT_PUBLIC_API_URL}/public${report?.image}`
                             }
                             alt="analysis image"
                             width={100}
@@ -285,8 +286,8 @@ export default function DashboardPage() {
 
                         <td className="px-3 py-3 text-xs">
                           <ul className="list-disc pl-4">
-                            <li>Siltstone {report.siltstone_prcnt}%</li>
-                            <li>Sandstone {report.sandstone_prcnt}%</li>
+                            <li>Siltstone {formatPercent(report.siltstone_prcnt)}%</li>
+                            <li>Sandstone {formatPercent(report.sandstone_prcnt)}%</li>
                           </ul>
                         </td>
 
