@@ -176,12 +176,20 @@ export default function DetailPage({ id }: DetailPageProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
               <div className="text-center">
                 <p className="font-semibold mb-2">Gambar Asli</p>
-                <Image src={a.original_image} alt="Original" width={400} height={300} />
+                <Image src={
+                        a?.original_image && (a.original_image.startsWith('http://') || a.original_image.startsWith('https://'))
+                            ? a.original_image
+                            : `${process.env.NEXT_PUBLIC_API_URL}/public${a?.original_image}`
+                    } className="mx-auto" alt="Original" width={400} height={300} />
               </div>
 
               <div className="text-center">
                 <p class-name="font-semibold mb-2">Hasil Analisis</p>
-                <Image src={a.image} alt="Segmented" width={400} height={300} />
+                <Image src={
+                        a?.image && (a.image.startsWith('http://') || a.image.startsWith('https://'))
+                            ? a.image
+                            : `${process.env.NEXT_PUBLIC_API_URL}/public${a?.image}`
+                    } className="mx-auto" alt="Segmented" width={400} height={300} />
               </div>
             </div>
           </section>

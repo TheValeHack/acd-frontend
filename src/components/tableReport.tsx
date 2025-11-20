@@ -178,7 +178,7 @@ export default function TableReport({
                     src={
                         report?.image && (report.image.startsWith('http://') || report.image.startsWith('https://'))
                             ? report.image
-                            : `${process.env.NEXT_PUBLIC_API_URL}${report?.image}`
+                            : `${process.env.NEXT_PUBLIC_API_URL}/public${report?.image}`
                     }
                     alt="analysis image"
                     width={100}
