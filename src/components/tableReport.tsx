@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DeleteModal from "./DeleteModal";
 import EditModal from "./EditModal";
 import { useSession } from "next-auth/react";
@@ -12,10 +12,12 @@ export default function TableReport({
     analysisData,
     wellData,
     currentPage,
+    maxData,
     onRefresh
   }: {
     analysisData: any;
     wellData: any;
+    maxData: number;
     currentPage: number;
     onRefresh: () => void
   }) {
@@ -124,6 +126,16 @@ export default function TableReport({
     setEditData(null);
   };
 
+  useEffect(() => {
+    console.log('currentPage: ',currentPage)
+    console.log('maxData: ', maxData)
+  }, [])
+
+  useEffect(() => {
+    console.log('currentPage: ',currentPage)
+    console.log('maxData: ', maxData)
+  }, [currentPage])
+
 
   return (
     <div className="bg-white shadow overflow-hidden">
@@ -157,7 +169,7 @@ export default function TableReport({
 
           {analysisData &&
             analysisData.length > 0 &&
-            analysisData.map((report: any, index: number) => (
+            analysisData.slice((currentPage-1) * maxData, maxData * currentPage).map((report: any, index: number) => (
               <tr
                 key={report.id}
                 className={`hover:bg-gray-50 ${

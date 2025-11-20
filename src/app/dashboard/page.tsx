@@ -253,7 +253,7 @@ export default function DashboardPage() {
 
                   {!analysisFetch.loading &&
                     !wellFetch.loading &&
-                    analysisFetch.data?.data?.map((report: any, index: number) => (
+                    analysisFetch.data?.data?.slice(0,3).map((report: any, index: number) => (
                       <tr
                         key={report.id}
                         className={`hover:bg-gray-50 ${
