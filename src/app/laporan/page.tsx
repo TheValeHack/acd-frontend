@@ -3,7 +3,7 @@
 import { useFetch } from '@/hooks/useFetch'
 import Sidebar from '../../components/Sidebar'
 import Table from '../../components/tableReport'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 
 
@@ -11,11 +11,38 @@ export default function LaporanPage() {
     const wellFetch = useFetch("/well",)
     const analysisFetch = useFetch("/analysis")
     const [currentPage, setCurrentPage] = useState(1)
+    const [analysisData, setAnalysisData] = useState(null)
+    const [queryData, setQueryData] = useState([])
+    const [query, setQuery] = useState("")
     const maxData = 5;
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page)
     }
+    const handleChange = (event: any) => {
+        setQuery(event.target.value)
+    }
+
+    useEffect(() => {
+        if(!analysisFetch.loading){
+            setAnalysisData(analysisFetch?.data?.data)
+        }
+    }, [analysisFetch])
+
+    useEffect(() => {
+        const data = analysisData || []
+        const filteredData = data.filter((item: any) => {
+            const wellData = wellFetch?.data?.data?.filter((x: any) => x.id == item.well_id)
+            item['well'] = wellData
+            console.log(item)
+            console.log(wellData[0].name.toLowerCase().includes(query))
+            if(wellData[0].name.toLowerCase().includes(query)){
+                return item
+            }
+        })
+        setQueryData(filteredData)
+    }, [query])
+    
 
     return (
         <div className="flex min-h-screen bg-gray-100">
@@ -30,6 +57,8 @@ export default function LaporanPage() {
                         <input
                             type="text"
                             placeholder="Cari"
+                            value={query}
+                            onChange={handleChange}
                             className="px-4 py-2 w-full outline-none text-orange-500"
                         />
                         <button className="bg-[#FDEEE7] p-2">
@@ -42,7 +71,7 @@ export default function LaporanPage() {
                     Lihat dan kelola hasil analisis
                 </p>
             </div>
-            <Table maxData={maxData} currentPage={currentPage} wellData={wellFetch.data?.data} analysisData={analysisFetch.data?.data} onRefresh={analysisFetch.refetch} />
+            <Table maxData={maxData} currentPage={currentPage} wellData={wellFetch.data?.data} analysisData={query.length > 0 ? queryData : analysisData} onRefresh={analysisFetch.refetch} />
             {/* PAGINATION */}
                 <div className="p-4 flex justify-center items-center space-x-2">
 
