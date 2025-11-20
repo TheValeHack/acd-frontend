@@ -11,10 +11,12 @@ import { formatPercent } from "@/utils/formatPercent";
 export default function TableReport({
     analysisData,
     wellData,
+    currentPage,
     onRefresh
   }: {
     analysisData: any;
     wellData: any;
+    currentPage: number;
     onRefresh: () => void
   }) {
   const router = useRouter();
