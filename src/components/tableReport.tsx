@@ -37,7 +37,7 @@ export default function TableReport({
     if (selectedReportId) {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/reports/${selectedReportId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/analysis/${selectedReportId}`,
           {
             method: "DELETE",
             headers: {
@@ -87,33 +87,6 @@ export default function TableReport({
   };
 
 
-  const data = [
-    {
-      tanggal: "20-02-2023",
-      lokasi: "Sumur A-01",
-      kedalaman: "1200 - 1400",
-      segmentasi: "Lumpur 10%, Siltstone 50%, Sandstone 40%",
-    },
-    {
-      tanggal: "2025-10-21",
-      lokasi: "Bandung",
-      kedalaman: "15 km",
-      segmentasi: "Sesar Lembang, dasdadsa, dsadasd",
-    },
-    {
-      tanggal: "2025-10-22",
-      lokasi: "Yogyakarta",
-      kedalaman: "12 km",
-      segmentasi: "Zona Subduksi Jawa, asdasdasd, asdasda",
-    },
-    {
-      tanggal: "2025-10-23",
-      lokasi: "Surabaya",
-      kedalaman: "8 km",
-      segmentasi: "Sesar Kendeng, adsadas, asdasdads",
-    },
-  ];
-
   return (
     <div className="bg-white shadow overflow-hidden">
       <table className="min-w-full text-xs">
@@ -128,14 +101,25 @@ export default function TableReport({
           </tr>
         </thead>
         <tbody>
-          {!(analysisData?.length > 0) ? (
+          {!analysisData && (
             <tr>
-              <td colSpan={6} className="text-center py-5">
+              <td colSpan={6} className="text-center py-5 text-gray-500">
+                Loading data...
+              </td>
+            </tr>
+          )}
+
+          {analysisData && analysisData.length === 0 && (
+            <tr>
+              <td colSpan={6} className="text-center py-5 text-gray-500">
                 Tidak ada data ditemukan
               </td>
             </tr>
-          ) : (
-            analysisData?.map((report: any, index: any) => (
+          )}
+
+          {analysisData &&
+            analysisData.length > 0 &&
+            analysisData.map((report: any, index: number) => (
               <tr
                 key={report.id}
                 className={`hover:bg-gray-50 ${
@@ -145,12 +129,15 @@ export default function TableReport({
                 <td className="px-3 py-3 whitespace-nowrap text-xs text-[#000000]">
                   {new Date(report.created_at).toLocaleDateString()}
                 </td>
+
                 <td className="px-3 py-3 whitespace-nowrap text-xs font-medium text-[#000000]">
-                  {wellData.filter((item: any) => item.id == report.well_id)[0]?.name}
+                  {wellData.find((item: any) => item.id === report.well_id)?.name}
                 </td>
+
                 <td className="px-3 py-3 whitespace-nowrap text-xs text-[#000000]">
                   {report.vertical_depth}
                 </td>
+
                 <td className="px-3 py-3 whitespace-nowrap text-xs text-[#000000]">
                   <Image
                     src={report.image}
@@ -160,41 +147,45 @@ export default function TableReport({
                     className="w-24 h-16 rounded-lg"
                   />
                 </td>
+
                 <td className="px-3 py-3 text-xs text-[#000000]">
                   <ul className="list-disc pl-4">
                     <li>Siltstone {report.siltstone_prcnt}%</li>
                     <li>Sandstone {report.sandstone_prcnt}%</li>
                   </ul>
                 </td>
+
                 <td className="px-3 py-3 whitespace-nowrap text-xs font-medium">
                   <div className="flex items-center space-x-3">
                     <button onClick={() => handleViewReport(report.id)}>
                       <img
                         src="/images/detail.png"
                         alt="Detail"
-                        className="w-5 h-5 hover:opacity-70 transition"
+                        className="w-5 h-5 hover:opacity-70 transition cursor-pointer"
                       />
                     </button>
-                    <button  onClick={() => handleEditReport(report)}>
+
+                    <button onClick={() => handleEditReport(report)}>
                       <img
                         src="/images/edit.png"
                         alt="Edit"
-                        className="w-5 h-5 hover:opacity-70 transition"
+                        className="w-5 h-5 hover:opacity-70 transition cursor-pointer"
                       />
                     </button>
+
                     <button onClick={() => handleDeleteReport(report.id)}>
                       <img
                         src="/images/hapus.png"
                         alt="Hapus"
-                        className="w-5 h-5 hover:opacity-70 transition"
+                        className="w-5 h-5 hover:opacity-70 transition cursor-pointer"
                       />
                     </button>
                   </div>
                 </td>
               </tr>
-            ))
-          )}
+            ))}
         </tbody>
+
       </table>
 
       {/* Delete Modal */}

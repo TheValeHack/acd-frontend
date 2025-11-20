@@ -17,11 +17,11 @@ export default function LaporanPage() {
                     Laporan Hasil Analisis
                     </h1>
 
-                    <div className="flex items-center border bg-[#FDEEE7] rounded-full overflow-hidden w-120">
+                    <div className="flex items-center bg-[#FDEEE7] rounded-full overflow-hidden w-120">
                         <input
                             type="text"
                             placeholder="Cari"
-                            className="px-3 py-2 w-full outline-none text-[#ED5E24]"
+                            className="px-4 py-2 w-full outline-none text-orange-500"
                         />
                         <button className="bg-[#FDEEE7] p-2">
                             <img src="images/search.png" alt="Cari" className="w-5 h-5" />

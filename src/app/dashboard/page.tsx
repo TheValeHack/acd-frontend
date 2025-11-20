@@ -191,80 +191,95 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {
-                   ( analysisFetch.loading && wellFetch.loading ) ? (<p>loading....</p>) :   !(analysisFetch.data?.data?.length > 0) ? (
-                    <p className="mt-5">Tidak ada data ditemukan</p>
-                  ) : analysisFetch.data?.data?.map((report: any, index: any) => (
-                    <tr
-                      key={report.id}
-                      className={`hover:bg-gray-50 ${
-                        index % 2 === 0 ? "bg-[#FDEEE7]" : "bg-white"
-                      }`}
-                    >
-                      <td className="px-3 py-3 whitespace-nowrap text-xs text-[#000000]">
-                        {(new Date(report.created_at).toLocaleDateString())}
-                      </td>
-                      <td className="px-3 py-3 whitespace-nowrap text-xs font-medium text-[#000000]">
-                        {wellFetch.data?.data?.filter((item: any) => item.id == report.well_id)[0]?.name}
-                      </td>
-                      <td className="px-3 py-3 whitespace-nowrap text-xs text-[#000000]">
-                        {report.vertical_depth}
-                      </td>
-                      <td className="px-3 py-3 whitespace-nowrap text-xs text-[#000000]">
-                        <Image
-                          src={report.image}
-                          alt="analysis image"
-                          width={100}
-                          height={100}
-                          className="w-24 h-16 rounded-lg"
-                        />
-                      </td>
-                      <td className="px-3 py-3 text-xs text-[#000000]">
-                        <ul className="list-disc pl-4">
-                          <li>Siltstone {report.siltstone_prcnt}%</li>
-                          <li>Sandstone {report.siltstone_prcnt}%</li>
-                        </ul>
-                      </td>
-                      <td className="px-3 py-3 whitespace-nowrap text-xs font-medium">
-                        <div className="flex items-center space-x-3">
-                          <button onClick={() => handleViewReport(report.id)}>
-                            <img
-                              src="/images/detail.png"
-                              alt="Detail"
-                              className="w-5 h-5 hover:opacity-70 transition"
-                            />
-                          </button>
-                          <button onClick={() => handleEditReport(report)}>
-                            <img
-                              src="/images/edit.png"
-                              alt="Edit"
-                              className="w-5 h-5 hover:opacity-70 transition"
-                            />
-                          </button>
-                          <button onClick={() => handleDeleteReport(report.id)}>
-                            <img
-                              src="/images/hapus.png"
-                              alt="Hapus"
-                              className="w-5 h-5 hover:opacity-70 transition"
-                            />
-                          </button>
-                        </div>
+                  {(analysisFetch.loading || wellFetch.loading) && (
+                    <tr>
+                      <td
+                        colSpan={tableHeaders.length}
+                        className="text-center py-5 text-gray-500"
+                      >
+                        Loading data...
                       </td>
                     </tr>
-                  ))
-                  }
+                  )}
+
+                  {!analysisFetch.loading &&
+                    !wellFetch.loading &&
+                    (!analysisFetch.data?.data ||
+                      analysisFetch.data.data.length === 0) && (
+                      <tr>
+                        <td
+                          colSpan={tableHeaders.length}
+                          className="text-center py-5 text-gray-500"
+                        >
+                          Tidak ada data ditemukan
+                        </td>
+                      </tr>
+                    )}
+
+                  {!analysisFetch.loading &&
+                    !wellFetch.loading &&
+                    analysisFetch.data?.data?.map((report: any, index: number) => (
+                      <tr
+                        key={report.id}
+                        className={`hover:bg-gray-50 ${
+                          index % 2 === 0 ? "bg-[#FDEEE7]" : "bg-white"
+                        }`}
+                      >
+                        <td className="px-3 py-3 text-xs">
+                          {new Date(report.created_at).toLocaleDateString()}
+                        </td>
+
+                        <td className="px-3 py-3 text-xs">
+                          {wellFetch.data?.data?.find((w: any) => w.id === report.well_id)?.name}
+                        </td>
+
+                        <td className="px-3 py-3 text-xs">{report.vertical_depth}</td>
+
+                        <td className="px-3 py-3 text-xs">
+                          <Image
+                            src={`${process.env.NEXT_PUBLIC_API_URL}${report.image}`}
+                            alt="analysis image"
+                            width={100}
+                            height={100}
+                            className="w-24 h-16 rounded-lg"
+                          />
+                        </td>
+
+                        <td className="px-3 py-3 text-xs">
+                          <ul className="list-disc pl-4">
+                            <li>Siltstone {report.siltstone_prcnt}%</li>
+                            <li>Sandstone {report.siltstone_prcnt}%</li>
+                          </ul>
+                        </td>
+
+                        <td className="px-3 py-3 text-xs">
+                          <div className="flex items-center space-x-3">
+                            <button onClick={() => handleViewReport(report.id)}>
+                              <img src="/images/detail.png" className="w-5 h-5 cursor-pointer" />
+                            </button>
+
+                            <button onClick={() => handleEditReport(report)}>
+                              <img src="/images/edit.png" className="w-5 h-5 cursor-pointer" />
+                            </button>
+
+                            <button onClick={() => handleDeleteReport(report.id)}>
+                              <img src="/images/hapus.png" className="w-5 h-5 cursor-pointer" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
+
               </table>
             </div>
           </section>
         </div>
       </div>
-      {/* Delete Modal */}
       {showDeleteModal && (
         <DeleteModal onConfirm={confirmDelete} onCancel={cancelDelete} />
       )}
 
-      {/* Edit Modal */}
       {showEditModal && editData && (
         <EditModal data={editData} onClose={closeEditModal} />
       )}
