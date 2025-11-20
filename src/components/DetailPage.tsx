@@ -197,7 +197,7 @@ export default function DetailPage({ id }: DetailPageProps) {
 
           <button
             onClick={() => router.back()}
-            className="mt-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm"
+            className="mt-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm cursor-pointer"
           >
             Kembali
           </button>

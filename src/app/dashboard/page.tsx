@@ -200,7 +200,7 @@ export default function DashboardPage() {
                 Riwayat Laporan Hasil Analisis
               </h2>
               <Link href="/laporan">
-                <button className="flex items-center text-sm text-[#2B2B2B] hover:underline font-medium gap-1">
+                <button className="flex items-center text-sm text-[#2B2B2B] hover:underline font-medium gap-1 cursor-pointer">
                   Lihat Selengkapnya
                   <img
                     src="/images/arrow-right.png"
