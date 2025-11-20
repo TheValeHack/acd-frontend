@@ -10,9 +10,11 @@ import { useSession } from "next-auth/react";
 export default function TableReport({
     analysisData,
     wellData,
+    onRefresh
   }: {
     analysisData: any;
     wellData: any;
+    onRefresh: () => void
   }) {
   const router = useRouter();
 
@@ -51,9 +53,7 @@ export default function TableReport({
           throw new Error("Gagal menghapus data");
         }
 
-        // refresh data atau update state
-        router.refresh(); // kalau pakai App Router
-        // atau setAnalysisData(prev => prev.filter(r => r.id !== selectedReportId))
+        onRefresh()
 
         console.log("Delete success:", selectedReportId);
       } catch (err) {
@@ -73,12 +73,47 @@ export default function TableReport({
   const handleEditReport = (report: any) => {
     // siapkan data untuk modal edit
     setEditData({
+      id: report.id,
       tanggal: new Date(report.created_at).toLocaleDateString(),
       lokasi: wellData.filter((item: any) => item.id == report.well_id)[0]?.name,
       kedalaman: report.vertical_depth,
       segmentasi: "Segmentasi placeholder", // bisa diganti sesuai data
     });
     setShowEditModal(true);
+  };
+
+  const confirmEdit = async (payload: {
+    id: string;
+    well_id: string;
+    vertical_depth: string;
+    date: string;
+  }) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/analysis/${payload.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.accessToken}`
+        },
+        body: JSON.stringify({
+          well_id: parseInt(payload.well_id),
+          vertical_depth: parseFloat(payload.vertical_depth),
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update analysis");
+      }
+
+      alert("Data berhasil diupdate!");
+
+      closeEditModal();
+      onRefresh()
+
+    } catch (error) {
+      console.error(error);
+      alert("Gagal update data");
+    }
   };
 
   const closeEditModal = () => {
@@ -140,7 +175,11 @@ export default function TableReport({
 
                 <td className="px-3 py-3 whitespace-nowrap text-xs text-[#000000]">
                   <Image
-                    src={report.image}
+                    src={
+                        report?.image && (report.image.startsWith('http://') || report.image.startsWith('https://'))
+                            ? report.image
+                            : `${process.env.NEXT_PUBLIC_API_URL}${report?.image}`
+                    }
                     alt="analysis image"
                     width={100}
                     height={100}
@@ -195,7 +234,7 @@ export default function TableReport({
 
       {/* Edit Modal */}
       {showEditModal && editData && (
-        <EditModal data={editData} onClose={closeEditModal} />
+        <EditModal data={editData} wellData={wellData} onConfirm={confirmEdit} onClose={closeEditModal} />
       )}
     </div>
   );

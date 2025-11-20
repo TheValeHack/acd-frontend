@@ -42,7 +42,7 @@ export default function DashboardPage() {
     if (selectedReportId) {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/reports/${selectedReportId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/analysis/${selectedReportId}`,
           {
             method: "DELETE",
             headers: {
@@ -56,9 +56,7 @@ export default function DashboardPage() {
           throw new Error("Gagal menghapus data");
         }
 
-        // refresh data atau update state
-        router.refresh(); // kalau pakai App Router
-        // atau setAnalysisData(prev => prev.filter(r => r.id !== selectedReportId))
+        analysisFetch.refetch()
 
         console.log("Delete success:", selectedReportId);
       } catch (err) {
@@ -78,6 +76,7 @@ export default function DashboardPage() {
 
   const handleEditReport = (report: any) => {
     setEditData({
+      id: report.id,
       tanggal: new Date(report.created_at).toLocaleDateString(),
       lokasi: wellFetch.data?.data?.filter((item: any) => item.id == report.well_id)[0]?.name,
       kedalaman: report.vertical_depth,
@@ -85,6 +84,41 @@ export default function DashboardPage() {
     });
     setShowEditModal(true);
   };
+
+  const confirmEdit = async (payload: {
+    id: string;
+    well_id: string;
+    vertical_depth: string;
+    date: string;
+  }) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/analysis/${payload.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.accessToken}`
+        },
+        body: JSON.stringify({
+          well_id: parseInt(payload.well_id),
+          vertical_depth: parseFloat(payload.vertical_depth),
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update analysis");
+      }
+
+      alert("Data berhasil diupdate!");
+
+      closeEditModal();
+      analysisFetch.refetch();
+
+    } catch (error) {
+      console.error(error);
+      alert("Gagal update data");
+    }
+  };
+
 
   const closeEditModal = () => {
     setShowEditModal(false);
@@ -237,7 +271,11 @@ export default function DashboardPage() {
 
                         <td className="px-3 py-3 text-xs">
                           <Image
-                            src={`${process.env.NEXT_PUBLIC_API_URL}${report.image}`}
+                            src={
+                                report?.image && (report.image.startsWith('http://') || report.image.startsWith('https://'))
+                                    ? report.image
+                                    : `${process.env.NEXT_PUBLIC_API_URL}${report?.image}`
+                            }
                             alt="analysis image"
                             width={100}
                             height={100}
@@ -248,7 +286,7 @@ export default function DashboardPage() {
                         <td className="px-3 py-3 text-xs">
                           <ul className="list-disc pl-4">
                             <li>Siltstone {report.siltstone_prcnt}%</li>
-                            <li>Sandstone {report.siltstone_prcnt}%</li>
+                            <li>Sandstone {report.sandstone_prcnt}%</li>
                           </ul>
                         </td>
 
@@ -281,7 +319,7 @@ export default function DashboardPage() {
       )}
 
       {showEditModal && editData && (
-        <EditModal data={editData} onClose={closeEditModal} />
+        <EditModal data={editData} wellData={wellFetch.data?.data} onConfirm={confirmEdit} onClose={closeEditModal} />
       )}
 
     </div>

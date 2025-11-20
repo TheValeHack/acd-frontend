@@ -2,157 +2,197 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useFetch } from "@/hooks/useFetch";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Pie } from "react-chartjs-2";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+
 
 type DetailPageProps = {
-  id?: number;
+  id: number;
 };
 
-const data = [
-  {
-    tanggal: '20-02-2023',
-    lokasi: 'Sumur A-01',
-    waktu: '12:00 - 14:00',
-    persentase: { Siltstone: 60, Sandstone: 30, Lainnya: 10 },
-  },
-  {
-    tanggal: '21-10-2025',
-    lokasi: 'Bandung',
-    waktu: '09:00 - 11:00',
-    persentase: { Siltstone: 40, Sandstone: 50, Lainnya: 10 },
-  },
-  {
-    tanggal: '22-10-2025',
-    lokasi: 'Yogyakarta',
-    waktu: '10:00 - 12:00',
-    persentase: { Siltstone: 20, Sandstone: 70, Lainnya: 10 },
-  },
-  {
-    tanggal: '23-10-2025',
-    lokasi: 'Surabaya',
-    waktu: '13:00 - 15:00',
-    persentase: { Siltstone: 50, Sandstone: 40, Lainnya: 10 },
-  },
-];
+ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
-export default function DetailPage({ id = 0 }: DetailPageProps) {
+export default function DetailPage({ id }: DetailPageProps) {
   const router = useRouter();
-  const laporan = data[id];
+  const { data: session } = useSession();
 
-  if (!laporan) {
+  const { data: analysis, loading, error } = useFetch(`/analysis/${id}`);
+
+  // State untuk nama lokasi sumur
+  const [wellName, setWellName] = useState<string>("Loading...");
+
+  // Setelah analysis didapat → fetch well
+  useEffect(() => {
+    if (!analysis?.data?.well_id) return;
+
+    const fetchWell = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/well/${analysis.data.well_id}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session?.accessToken}`, // token dari NextAuth
+            },
+          }
+        );
+        const json = await res.json();
+        setWellName(json?.data?.name ?? "Tidak ditemukan");
+      } catch (err) {
+        setWellName("Error mengambil lokasi");
+      }
+    };
+
+    fetchWell();
+  }, [analysis]);
+
+  if (loading) {
+    return <div className="p-8 text-gray-500">Loading...</div>;
+  }
+
+  if (error || !analysis) {
     return (
       <div className="p-8 text-red-600">
-        Data tidak ditemukan.{" "}
-        <button onClick={() => router.back()} className="underline text-orange-600">
+        Data tidak ditemukan.
+        <button
+          onClick={() => router.back()}
+          className="underline text-orange-600 ml-2"
+        >
           Kembali
         </button>
       </div>
     );
   }
 
+  const pieData = {
+    labels: ["Siltstone", "Sandstone"],
+    datasets: [
+      {
+        data: [analysis.data.siltstone_prcnt, analysis.data.sandstone_prcnt],
+        backgroundColor: ["#7086FD", "#6FD195"],
+        borderWidth: 1,
+      },
+    ],
+  };
+  const pieOptions = {
+    plugins: {
+      legend: {
+        display: true,
+        position: "bottom" as const,
+      },
+      datalabels: {
+        color: "#fff",
+        font: {
+          weight: "bold" as const,
+          size: 14,
+        },
+        formatter: (value: number, context: any) => {
+          const label = context.chart.data.labels[context.dataIndex];
+          return `${label}\n${value}%`;
+        },
+        textAlign: "center" as const,
+      },
+    },
+  };
+
+  const a = analysis.data;
+
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
-
-      {/* Konten Utama */}
       <main className="flex-1 p-8 space-y-6">
+        {/* Header */}
         <header>
           <h1 className="text-4xl font-bold text-gray-900">Hasil Analisis</h1>
           <p className="text-lg text-gray-500">Lihat dan kelola hasil analisis</p>
         </header>
 
         <div className="bg-white rounded-xl shadow p-6 space-y-6">
-            {/* Informasi & Persentase */}
-            <section className="flex flex-col md:flex-row gap-6">
-                {/* Kiri: Informasi + Persentase */}
-                <div className="w-full md:w-[40%] flex flex-col h-[500px] gap-4">
-                    {/* Informasi - 40% */}
-                    <div className="basis-[40%] bg-[#FDEEE7] border-2 border-[#FBDCD0] rounded-xl p-4 space-y-2 text-sm text-gray-700 overflow-auto">
-                        <p className="text-2xl font-bold text-black">Informasi</p>
-                    <div className="grid grid-cols-[auto_40px_1fr] gap-y-2 text-sm text-[#000000]">
-                        <p className="font-semibold">Tanggal</p>
-                        <p className="text-center">:</p>
-                        <p>{laporan.tanggal}</p>
+          {/* Informasi */}
+          <section className="flex flex-col md:flex-row gap-6">
+            {/* Kiri */}
+            <div className="w-full md:w-[40%] flex flex-col h-[500px] gap-4">
+              <div className="basis-[40%] bg-[#FDEEE7] border-2 border-[#FBDCD0] rounded-xl p-4 space-y-2">
+                <p className="text-2xl font-bold text-black">Informasi</p>
 
-                        <p className="font-semibold">Lokasi Sumur</p>
-                        <p className="text-center">:</p>
-                        <p>{laporan.lokasi}</p>
+                <div className="grid grid-cols-[auto_20px_1fr] gap-y-2 text-sm text-black">
+                  <p className="font-semibold">Tanggal</p>
+                  <p>:</p>
+                  <p>{new Date(a.created_at).toLocaleString()}</p>
 
-                        <p className="font-semibold">Kedalaman</p>
-                        <p className="text-center">:</p>
-                        <p>{laporan.waktu}</p>
-                    </div>
-                    </div>
+                  <p className="font-semibold">Lokasi Sumur</p>
+                  <p>:</p>
+                  <p>{wellName}</p>
 
-                    {/* Persentase Bebatuan - 60% */}
-                    <div className="basis-[60%] bg-white border-2 border-[#E9EAEB] rounded-xl p-4 overflow-auto">
-                        <h2 className="text-2xl font-bold text-black">Persentase Bebatuan</h2>
-                        <table className="text-sm text-gray-700 w-full rounded-md mt-9">
-                            <thead className="bg-[#FFFFFF]">
-                                <tr>
-                                <th className="px-3 py-2 text-left">Jenis Bebatuan</th>
-                                <th className="px-3 py-2 text-left">Persentase</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {Object.entries(laporan.persentase).map(([key, value], index) => (
-                                    <tr
-                                    key={key}
-                                    className={index % 2 === 0 ? "bg-[#FDEEE7]" : "bg-white"}
-                                    >
-                                    <td className="px-3 py-2">{key}</td>
-                                    <td className="px-3 py-2">{value}%</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                  <p className="font-semibold">Kedalaman</p>
+                  <p>:</p>
+                  <p>{a.vertical_depth} m</p>
                 </div>
+              </div>
 
-                {/* Kanan: Visual Distribusi */}
-                <div className="w-full md:w-[60%] bg-[#FDEEE7] border-2 border-[#FBDCD0] rounded-xl p-4">
-                    <h2 className="text-2xl font-bold text-black">Visual Distribusi</h2>
-                    <div className="flex flex-col items-center">
-                    <Image src="/images/pie-chart.png" alt="Pie Chart" width={300} height={300} />
-                        <ul className="mt-4 text-sm text-gray-600 flex flex-wrap gap-x-4 gap-y-2">
-                        {Object.keys(laporan.persentase).map((key, i) => (
-                            <li key={i} className="flex items-center">
-                            <span
-                                className={`inline-block w-3 h-3 mr-2 rounded-full ${
-                                i === 0 ? "bg-blue-500" : i === 1 ? "bg-green-500" : "bg-orange-500"
-                                }`}
-                            ></span>
-                            {key}
-                            </li>
-                        ))}
-                        </ul>
-                    </div>
-                </div>
-            </section>
+              {/* Persentase */}
+              <div className="basis-[60%] bg-white border-2 border-[#E9EAEB] rounded-xl p-4 overflow-auto">
+                <h2 className="text-2xl font-bold text-black">Persentase Bebatuan</h2>
 
-
-
-            {/* Hasil Segmentasi */}
-            <section className="bg-white border-2 border-[#E9EAEB] rounded-xl p-4">
-                <h2 className="text-2xl font-bold text-black">Hasil Segmentasi</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
-                    <div>
-                        <p className="text-base text-black mb-1 text-center font-semibold">Gambar Asli</p>
-                        <Image src="/images/original-rock.png" alt="Gambar Asli" width={400} height={300} />
-                    </div>
-                    <div>
-                        <p className="text-base text-black mb-1 text-center font-semibold">Gambar Hasil Analisis</p>
-                        <Image src="/images/segmented-rock.png" alt="Gambar Analisis" width={400} height={300} />
-                    </div>
-                </div>
-            </section>
-
-            <button
-                onClick={() => router.back()}
-                className="mt-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm"
-            >
-                Kembali
-            </button>
+                <table className="text-sm text-gray-700 w-full mt-4">
+                  <tbody>
+                    <tr className="bg-[#FDEEE7]">
+                      <td className="px-3 py-2">Siltstone</td>
+                      <td className="px-3 py-2">{a.siltstone_prcnt}%</td>
+                    </tr>
+                    <tr className="bg-white">
+                      <td className="px-3 py-2">Sandstone</td>
+                      <td className="px-3 py-2">{a.sandstone_prcnt}%</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
+
+            {/* Kanan */}
+            <div className="w-full md:w-[60%] bg-[#FDEEE7] border-2 border-[#FBDCD0] rounded-xl p-4">
+              <h2 className="text-2xl font-bold text-black">Visual Distribusi</h2>
+
+              <div className="flex flex-col items-center mt-4">
+                <div className="flex justify-center items-center h-[350px]">
+                  <Pie data={pieData} options={pieOptions} />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Gambar */}
+          <section className="bg-white border-2 border-[#E9EAEB] rounded-xl p-4">
+            <h2 className="text-2xl font-bold text-black">Hasil Segmentasi</h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+              <div className="text-center">
+                <p className="font-semibold mb-2">Gambar Asli</p>
+                <Image src={a.original_image} alt="Original" width={400} height={300} />
+              </div>
+
+              <div className="text-center">
+                <p class-name="font-semibold mb-2">Hasil Analisis</p>
+                <Image src={a.image} alt="Segmented" width={400} height={300} />
+              </div>
+            </div>
+          </section>
+
+          <button
+            onClick={() => router.back()}
+            className="mt-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm"
+          >
+            Kembali
+          </button>
+        </div>
       </main>
     </div>
   );

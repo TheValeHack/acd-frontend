@@ -22,13 +22,13 @@ export default function DeleteModal({
         <div className="flex gap-2 w-full max-w-[400px] mx-auto">
           <button
             onClick={onCancel}
-            className="w-full px-4 py-2 bg-white border-2 border-[#E9EAEB] text-black rounded-lg"
+            className="w-full px-4 py-2 bg-white border-2 border-[#E9EAEB] text-black rounded-lg cursor-pointer"
           >
             Batal
           </button>
           <button
             onClick={onConfirm}
-            className="w-full px-4 py-2 bg-red-600 text-white rounded-lg"
+            className="w-full px-4 py-2 bg-red-600 text-white rounded-lg cursor-pointer"
           >
             Konfirmasi
           </button>

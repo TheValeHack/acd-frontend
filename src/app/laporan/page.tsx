@@ -33,7 +33,7 @@ export default function LaporanPage() {
                     Lihat dan kelola hasil analisis
                 </p>
             </div>
-            <Table wellData={wellFetch.data?.data} analysisData={analysisFetch.data?.data} />
+            <Table wellData={wellFetch.data?.data} analysisData={analysisFetch.data?.data} onRefresh={analysisFetch.refetch} />
             <div className="p-4 flex justify-center items-center space-x-2">
                 <button className="w-8 h-8 flex items-center justify-center ">
                     <img src="images/nav-arrow-left.png" alt="Sebelumnya" className="w-4 h-4" />
