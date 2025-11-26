@@ -4,6 +4,8 @@ import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 export default function Home() {
@@ -14,24 +16,32 @@ export default function Home() {
     const [loading, setLoading] = useState(false);
 
     async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
+      e.preventDefault();
+      setLoading(true);
 
-    const res = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
 
-    setLoading(false);
+      setLoading(false);
 
-    if (res?.error) {
-      alert(res.error);
-      return;
+      if (res?.error) {
+        toast.error("Email atau kata sandi salah ❌", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+
+      toast.success("Login berhasil 🎉", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+
+      router.push("/dashboard");
     }
-
-    router.push("/dashboard");
-  }
 
     return (
         <div className="relative font-sans flex items-center justify-center min-h-screen gap-16">
@@ -55,7 +65,7 @@ export default function Home() {
                 priority
                 />
                 <div className="w-full py-12 space-y-2">
-                    <h1 className="text-4xl font-bold">Selamat Datang</h1>
+                    <h1 className="text-4xl font-bold text-black dark:text-black">Selamat Datang</h1>
                     <p className="text-[#5E5E5E]">Selamat datang kembali! Tolong isi email dan kata sandi.</p>
                 </div>
                 <div className="w-full">
@@ -77,7 +87,7 @@ export default function Home() {
         <input
           type="email"
           placeholder="Email"
-          className="ml-2 flex-1 outline-none text-sm"
+          className="ml-2 flex-1 outline-none text-sm text-black dark:text-black bg-transparent"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -102,7 +112,7 @@ export default function Home() {
         <input
           type={showPassword ? "text" : "password"}
           placeholder="Kata Sandi"
-          className="ml-2 flex-1 outline-none text-sm"
+          className="ml-2 flex-1 outline-none text-sm block text-sm font-medium text-gray-700 dark:text-black"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -125,7 +135,7 @@ export default function Home() {
 
     <div className="flex items-center pb-4">
       <input id="checked-checkbox" type="checkbox" className="w-4 h-4" />
-      <label className="ms-2 text-sm font-medium text-gray-900">Ingat saya</label>
+      <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-900">Ingat saya</label>
     </div>
 
     <button
@@ -165,6 +175,7 @@ export default function Home() {
                 />
             </div>
         </div>
+        <ToastContainer />
         </div>
     );
 }
