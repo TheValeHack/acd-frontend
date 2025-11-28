@@ -64,12 +64,12 @@ export default function AnalisisPage() {
         >
           {/* Lokasi */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold mb-2">Lokasi Sumur</label>
+            <label className="block text-sm font-semibold mb-2 text-black dark:text-black">Lokasi Sumur</label>
             <div className="flex items-center border-2 border-gray-300 bg-gray-50 rounded-xl px-3 py-2">
               <Image src="/images/location.svg" alt="Location" width={20} height={20} className="mr-3" />
 
               <select
-                className="w-full bg-gray-50 outline-none"
+                className="w-full bg-gray-50 outline-none text-black dark:text-black"
                 value={wellId}
                 onChange={(e) => setWellId(e.target.value)}
               >
@@ -85,14 +85,14 @@ export default function AnalisisPage() {
 
           {/* Kedalaman */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold mb-2">Kedalaman (m)</label>
+            <label className="block text-sm font-semibold mb-2 text-black dark:text-black">Kedalaman (m)</label>
             <div className="flex items-center border-2 border-gray-300 bg-gray-50 rounded-xl px-3 py-2">
               <Image src="/images/depth.svg" alt="Depth" width={20} height={20} className="mr-3" />
               <input
                 type="number"
                 step="0.01"
                 placeholder="Masukkan kedalaman"
-                className="w-full bg-gray-50 outline-none"
+                className="w-full bg-gray-50 outline-none text-[gray] dark:text-gray"
                 value={depth}
                 onChange={(e) => setDepth(e.target.value)}
               />

@@ -27,7 +27,7 @@ export default function UploadArea({
 
   return (
     <div>
-      <label className="block text-sm font-semibold mb-2">Unggah Foto Bebatuan</label>
+      <label className="block text-sm font-semibold mb-2 text-black dark:text-black">Unggah Foto Bebatuan</label>
 
       {/* Area upload */}
       <div
