@@ -23,6 +23,17 @@ export default function AnalisisPage() {
     message: string;
   } | null>(null);
 
+  // ⏳ AUTO CLOSE ALERT 4 DETIK
+  useEffect(() => {
+    if (!alertInfo) return;
+
+    const timer = setTimeout(() => {
+      setAlertInfo(null);
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, [alertInfo]);
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 

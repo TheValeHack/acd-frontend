@@ -27,8 +27,18 @@ export default function DashboardPage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState<any | null>(null);
 
-  // Alert state
+  // Alert State
   const [alertInfo, setAlertInfo] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
+  // Auto close alert after 4 seconds
+  useEffect(() => {
+    if (alertInfo) {
+      const timer = setTimeout(() => {
+        setAlertInfo(null);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [alertInfo]);
 
   const handleViewReport = (reportId: number) => {
     router.push(`/laporan/${reportId}`);
@@ -53,9 +63,7 @@ export default function DashboardPage() {
           }
         );
 
-        if (!res.ok) {
-          throw new Error("Gagal menghapus data");
-        }
+        if (!res.ok) throw new Error("Gagal menghapus data");
 
         analysisFetch.refetch();
         setAlertInfo({ type: "success", message: "Data berhasil dihapus!" });
@@ -104,9 +112,7 @@ export default function DashboardPage() {
         })
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to update analysis");
-      }
+      if (!response.ok) throw new Error("Failed to update analysis");
 
       analysisFetch.refetch();
       setAlertInfo({ type: "success", message: "Data berhasil diupdate!" });
@@ -123,25 +129,20 @@ export default function DashboardPage() {
     setEditData(null);
   };
 
-  useEffect(() => {
-    console.log(wellFetch.loading, wellFetch.data);
-    console.log(analysisFetch.loading, analysisFetch.data);
-  }, []);
-
   return (
     <div className="flex min-h-screen bg-gray-100">
       <div className="w-full flex flex-col h-screen space-y-6 p-4">
-        {/* Header & Quick Action */}
+
+        {/* Header */}
         <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
           <header className="mb-6">
-            <h1 className="text-3xl font-bold text-[#000000]">
-              Selamat datang, Admin!
-            </h1>
+            <h1 className="text-3xl font-bold text-[#000000]">Selamat datang, Admin!</h1>
             <p className="text-[#5E5E5E] mt-1 text-base">
               Aplikasi ini menggunakan teknologi AI berbasis visi komputer untuk
               membantu menganalisis serbuk bor. Hasil analisis ditampilkan dalam bentuk laporan sebagai bahan pendukung keputusan.
             </p>
           </header>
+
           <section>
             <h2 className="text-xl font-bold text-[#000000] mb-3">Quick Action</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 min-h-[100px]">
@@ -149,12 +150,12 @@ export default function DashboardPage() {
                 <a
                   key={index}
                   href={action.href}
-                  className={`group overflow-visible bg-white hover:bg-[#ED5E24] text-black p-4 rounded-xl border-2 border-gray-200 hover:border-[#ED5E24] hover:shadow-[0_6px_18px_3px_rgba(0,0,0,0.2)] transition-all duration-300 flex items-center gap-4`}
+                  className="group overflow-visible bg-white hover:bg-[#ED5E24] text-black p-4 rounded-xl border-2 border-gray-200 hover:border-[#ED5E24] hover:shadow-[0_6px_18px_3px_rgba(0,0,0,0.2)] transition-all duration-300 flex items-center gap-4"
                 >
                   <div className="bg-[#E9EAEB] p-2 rounded-md flex items-center justify-center transition duration-300 group-hover:bg-[#F39772] ml-2">
                     <img
                       src={action.color === "blue" ? "/images/graph-logo.png" : "/images/report-logo.png"}
-                      alt={`${action.title} logo`}
+                      alt="icon"
                       className="w-8 h-8 object-contain transition duration-300 filter group-hover:brightness-0 group-hover:invert"
                     />
                   </div>
@@ -172,16 +173,18 @@ export default function DashboardPage() {
         <div className="bg-white rounded-2xl shadow overflow-hidden border border-gray-200 overflow-y-auto">
           <section className="p-8">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-[#000000]">Riwayat Laporan Hasil Analisis</h2>
+              <h2 className="text-xl font-bold text-[#000000]">
+                Riwayat Laporan Hasil Analisis
+              </h2>
               <Link href="/laporan">
                 <button className="flex items-center text-sm text-[#2B2B2B] hover:underline font-medium gap-1 cursor-pointer">
                   Lihat Selengkapnya
-                  <img src="/images/arrow-right.png" alt="arrow right" className="w-4 h-4"/>
+                  <img src="/images/arrow-right.png" alt="arrow" className="w-4 h-4" />
                 </button>
               </Link>
             </div>
 
-            {/* ALERT */}
+            {/* Alert */}
             {alertInfo && (
               <div className="mb-4">
                 <Alert type={alertInfo.type} message={alertInfo.message} onClose={() => setAlertInfo(null)} />
@@ -193,61 +196,79 @@ export default function DashboardPage() {
                 <thead className="bg-white">
                   <tr>
                     {tableHeaders.map((header, index) => (
-                      <th key={index} className="px-3 py-2 text-left text-xs text-[#000000] uppercase tracking-wider font-semibold">{header}</th>
+                      <th key={index} className="px-3 py-2 text-left text-xs text-[#000000] uppercase tracking-wider font-semibold">
+                        {header}
+                      </th>
                     ))}
                   </tr>
                 </thead>
+
                 <tbody className="divide-y divide-gray-200">
                   {(analysisFetch.loading || wellFetch.loading) && (
                     <tr>
-                      <td colSpan={tableHeaders.length} className="text-center py-5 text-gray-500">Loading data...</td>
+                      <td colSpan={tableHeaders.length} className="text-center py-5 text-gray-500">
+                        Loading data...
+                      </td>
                     </tr>
                   )}
 
-                  {!analysisFetch.loading && !wellFetch.loading && (!analysisFetch.data?.data || analysisFetch.data.data.length === 0) && (
-                    <tr>
-                      <td colSpan={tableHeaders.length} className="text-center py-5 text-gray-500">Tidak ada data ditemukan</td>
-                    </tr>
-                  )}
+                  {!analysisFetch.loading &&
+                    !wellFetch.loading &&
+                    (!analysisFetch.data?.data || analysisFetch.data.data.length === 0) && (
+                      <tr>
+                        <td colSpan={tableHeaders.length} className="text-center py-5 text-gray-500">
+                          Tidak ada data ditemukan
+                        </td>
+                      </tr>
+                    )}
 
-                  {!analysisFetch.loading && !wellFetch.loading && analysisFetch.data?.data?.sort((a: any, b: any) => {
-                      const dateA = new Date(a.created_at).getTime();
-                      const dateB = new Date(b.created_at).getTime();
-                      if (isNaN(dateA) || isNaN(dateB)) {
-                          if (isNaN(dateA) && !isNaN(dateB)) return 1;
-                          if (!isNaN(dateA) && isNaN(dateB)) return -1;
-                          return 0;
-                      }
-                      return dateB - dateA;
-                  }).slice(0,3).map((report: any, index: number) => (
-                    <tr key={report.id} className={`hover:bg-gray-50 ${index % 2 === 0 ? "bg-[#FDEEE7]" : "bg-white"}`}>
-                      <td className="px-3 py-3 text-xs">{new Date(report.created_at).toLocaleDateString()}</td>
-                      <td className="px-3 py-3 text-xs">{wellFetch.data?.data?.find((w: any) => w.id === report.well_id)?.name}</td>
-                      <td className="px-3 py-3 text-xs">{report.vertical_depth}</td>
-                      <td className="px-3 py-3 text-xs">
-                        <Image src={report?.image && (report.image.startsWith('http://') || report.image.startsWith('https://')) ? report.image : `${process.env.NEXT_PUBLIC_API_URL}/public${report?.image}`} alt="analysis image" width={100} height={100} className="w-24 h-16 rounded-lg" />
-                      </td>
-                      <td className="px-3 py-3 text-xs">
-                        <ul className="list-disc pl-4">
-                          <li>Siltstone {formatPercent(report.siltstone_prcnt)}%</li>
-                          <li>Sandstone {formatPercent(report.sandstone_prcnt)}%</li>
-                        </ul>
-                      </td>
-                      <td className="px-3 py-3 text-xs">
-                        <div className="flex items-center space-x-3">
-                          <button onClick={() => handleViewReport(report.id)}>
-                            <img src="/images/detail.png" className="w-5 h-5 cursor-pointer" />
-                          </button>
-                          <button onClick={() => handleEditReport(report)}>
-                            <img src="/images/edit.png" className="w-5 h-5 cursor-pointer" />
-                          </button>
-                          <button onClick={() => handleDeleteReport(report.id)}>
-                            <img src="/images/hapus.png" className="w-5 h-5 cursor-pointer" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {!analysisFetch.loading &&
+                    !wellFetch.loading &&
+                    analysisFetch.data?.data
+                      ?.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                      .slice(0, 3)
+                      .map((report: any, index: number) => (
+                        <tr key={report.id} className={`hover:bg-gray-50 ${index % 2 === 0 ? "bg-[#FDEEE7]" : "bg-white"}`}>
+                          <td className="px-3 py-3 text-xs">{new Date(report.created_at).toLocaleDateString()}</td>
+                          <td className="px-3 py-3 text-xs">
+                            {wellFetch.data?.data?.find((w: any) => w.id === report.well_id)?.name}
+                          </td>
+                          <td className="px-3 py-3 text-xs">{report.vertical_depth}</td>
+                          <td className="px-3 py-3 text-xs">
+                            <Image
+                              src={
+                                report?.image &&
+                                (report.image.startsWith("http://") || report.image.startsWith("https://"))
+                                  ? report.image
+                                  : `${process.env.NEXT_PUBLIC_API_URL}/public${report?.image}`
+                              }
+                              alt="analysis image"
+                              width={100}
+                              height={100}
+                              className="w-24 h-16 rounded-lg"
+                            />
+                          </td>
+                          <td className="px-3 py-3 text-xs">
+                            <ul className="list-disc pl-4">
+                              <li>Siltstone {formatPercent(report.siltstone_prcnt)}%</li>
+                              <li>Sandstone {formatPercent(report.sandstone_prcnt)}%</li>
+                            </ul>
+                          </td>
+                          <td className="px-3 py-3 text-xs">
+                            <div className="flex items-center space-x-3">
+                              <button onClick={() => handleViewReport(report.id)}>
+                                <img src="/images/detail.png" className="w-5 h-5 cursor-pointer" />
+                              </button>
+                              <button onClick={() => handleEditReport(report)}>
+                                <img src="/images/edit.png" className="w-5 h-5 cursor-pointer" />
+                              </button>
+                              <button onClick={() => handleDeleteReport(report.id)}>
+                                <img src="/images/hapus.png" className="w-5 h-5 cursor-pointer" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                 </tbody>
               </table>
             </div>
@@ -260,7 +281,12 @@ export default function DashboardPage() {
       )}
 
       {showEditModal && editData && (
-        <EditModal data={editData} wellData={wellFetch.data?.data} onConfirm={confirmEdit} onClose={closeEditModal} />
+        <EditModal
+          data={editData}
+          wellData={wellFetch.data?.data}
+          onConfirm={confirmEdit}
+          onClose={closeEditModal}
+        />
       )}
     </div>
   );

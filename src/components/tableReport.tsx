@@ -34,6 +34,17 @@ export default function TableReport({
   // STATE untuk Alert
   const [alertInfo, setAlertInfo] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
+  // Auto-hide alert setelah 4 detik
+  useEffect(() => {
+    if (alertInfo) {
+      const timer = setTimeout(() => {
+        setAlertInfo(null);
+      }, 4000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [alertInfo]);
+
   const handleViewReport = (reportId: number) => {
     router.push(`/laporan/${reportId}`);
   };
@@ -114,7 +125,6 @@ export default function TableReport({
 
       onRefresh();
       setAlertInfo({ type: "success", message: "Data berhasil diupdate!" });
-
       closeEditModal();
 
     } catch (error) {
