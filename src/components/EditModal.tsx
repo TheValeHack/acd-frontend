@@ -1,4 +1,6 @@
-import { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 
 interface EditModalProps {
   data: {
@@ -13,11 +15,18 @@ interface EditModalProps {
 }
 
 export default function EditModal({ data, wellData, onClose, onConfirm }: EditModalProps) {
-  const [tanggal, setTanggal] = useState(data.tanggal);
+  const [tanggal, setTanggal] = useState(data.tanggal || "");
   const [wellId, setWellId] = useState(
     wellData.find((w) => w.name === data.lokasi)?.id || ""
   );
-  const [kedalaman, setKedalaman] = useState(data.kedalaman);
+  const [kedalaman, setKedalaman] = useState(data.kedalaman || "");
+
+  // jika data berubah (misalnya modal dibuka untuk data baru), update state
+  useEffect(() => {
+    setTanggal(data.tanggal || "");
+    setKedalaman(data.kedalaman || "");
+    setWellId(wellData.find((w) => w.name === data.lokasi)?.id || "");
+  }, [data, wellData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -6,20 +6,31 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useFetch } from "@/hooks/useFetch";
 import { useRouter } from "next/navigation";
+import Alert from "../../components/Alert";
 
 export default function AnalisisPage() {
-  const router = useRouter()
+  const router = useRouter();
   const { data: session } = useSession();
-  const {data: wellData, loading} = useFetch('/well')
+  const { data: wellData, loading } = useFetch("/well");
+
   const [wellId, setWellId] = useState("");
   const [depth, setDepth] = useState("");
   const [file, setFile] = useState<File | null>(null);
+
+  // 🔔 ALERT STATE
+  const [alertInfo, setAlertInfo] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
     if (!wellId || !depth || !file) {
-      alert("Semua field harus diisi!");
+      setAlertInfo({
+        type: "error",
+        message: "Semua field harus diisi!",
+      });
       return;
     }
 
@@ -37,17 +48,24 @@ export default function AnalisisPage() {
     });
 
     if (!res.ok) {
-      alert("Gagal mengirim data!");
+      setAlertInfo({
+        type: "error",
+        message: "Gagal mengirim data!",
+      });
       return;
     }
 
-    const analysisData = await res.json()
-    alert("Analisis berhasil dibuat!");
+    const analysisData = await res.json();
+
+    setAlertInfo({
+      type: "success",
+      message: "Analisis berhasil dibuat!",
+    });
   };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-8 space-y-4">
 
         {/* Header */}
         <div className="mb-5">
@@ -57,6 +75,15 @@ export default function AnalisisPage() {
           </p>
         </div>
 
+        {/* 🔔 ALERT BOX */}
+        {alertInfo && (
+          <Alert
+            type={alertInfo.type}
+            message={alertInfo.message}
+            onClose={() => setAlertInfo(null)}
+          />
+        )}
+
         {/* Form */}
         <form
           onSubmit={handleSubmit}
@@ -64,12 +91,14 @@ export default function AnalisisPage() {
         >
           {/* Lokasi */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold mb-2 text-black dark:text-black">Lokasi Sumur</label>
+            <label className="block text-sm font-semibold mb-2 text-black">
+              Lokasi Sumur
+            </label>
             <div className="flex items-center border-2 border-gray-300 bg-gray-50 rounded-xl px-3 py-2">
               <Image src="/images/location.svg" alt="Location" width={20} height={20} className="mr-3" />
 
               <select
-                className="w-full bg-gray-50 outline-none text-black dark:text-black"
+                className="w-full bg-gray-50 outline-none text-black"
                 value={wellId}
                 onChange={(e) => setWellId(e.target.value)}
               >
@@ -85,14 +114,16 @@ export default function AnalisisPage() {
 
           {/* Kedalaman */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold mb-2 text-black dark:text-black">Kedalaman (m)</label>
+            <label className="block text-sm font-semibold mb-2 text-black">
+              Kedalaman (m)
+            </label>
             <div className="flex items-center border-2 border-gray-300 bg-gray-50 rounded-xl px-3 py-2">
               <Image src="/images/depth.svg" alt="Depth" width={20} height={20} className="mr-3" />
               <input
                 type="number"
                 step="0.01"
                 placeholder="Masukkan kedalaman"
-                className="w-full bg-gray-50 outline-none text-[gray] dark:text-gray"
+                className="w-full bg-gray-50 outline-none text-[gray]"
                 value={depth}
                 onChange={(e) => setDepth(e.target.value)}
               />

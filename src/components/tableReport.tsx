@@ -6,7 +6,7 @@ import DeleteModal from "./DeleteModal";
 import EditModal from "./EditModal";
 import { useSession } from "next-auth/react";
 import { formatPercent } from "@/utils/formatPercent";
-
+import Alert from "./Alert";
 
 export default function TableReport({
     analysisData,
@@ -31,13 +31,16 @@ export default function TableReport({
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState<any | null>(null);
 
+  // STATE untuk Alert
+  const [alertInfo, setAlertInfo] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
   const handleViewReport = (reportId: number) => {
     router.push(`/laporan/${reportId}`);
   };
 
   const handleDeleteReport = (reportId: number) => {
     setSelectedReportId(reportId);
-    setShowDeleteModal(true); // buka modal
+    setShowDeleteModal(true);
   };
 
   const confirmDelete = async () => {
@@ -49,7 +52,7 @@ export default function TableReport({
             method: "DELETE",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${session?.accessToken}`, // token dari NextAuth
+              Authorization: `Bearer ${session?.accessToken}`,
             },
           }
         );
@@ -58,12 +61,12 @@ export default function TableReport({
           throw new Error("Gagal menghapus data");
         }
 
-        onRefresh()
+        onRefresh();
+        setAlertInfo({ type: "success", message: "Data berhasil dihapus!" });
 
-        console.log("Delete success:", selectedReportId);
       } catch (err) {
         console.error(err);
-        alert("Terjadi kesalahan saat menghapus data");
+        setAlertInfo({ type: "error", message: "Terjadi kesalahan saat menghapus data" });
       }
     }
     setShowDeleteModal(false);
@@ -76,13 +79,12 @@ export default function TableReport({
   };
 
   const handleEditReport = (report: any) => {
-    // siapkan data untuk modal edit
     setEditData({
       id: report.id,
       tanggal: new Date(report.created_at).toLocaleDateString(),
       lokasi: wellData.filter((item: any) => item.id == report.well_id)[0]?.name,
       kedalaman: report.vertical_depth,
-      segmentasi: "Segmentasi placeholder", // bisa diganti sesuai data
+      segmentasi: "Segmentasi placeholder",
     });
     setShowEditModal(true);
   };
@@ -110,14 +112,14 @@ export default function TableReport({
         throw new Error("Failed to update analysis");
       }
 
-      alert("Data berhasil diupdate!");
+      onRefresh();
+      setAlertInfo({ type: "success", message: "Data berhasil diupdate!" });
 
       closeEditModal();
-      onRefresh()
 
     } catch (error) {
       console.error(error);
-      alert("Gagal update data");
+      setAlertInfo({ type: "error", message: "Gagal update data" });
     }
   };
 
@@ -127,18 +129,24 @@ export default function TableReport({
   };
 
   useEffect(() => {
-    console.log('currentPage: ',currentPage)
-    console.log('maxData: ', maxData)
-  }, [])
-
-  useEffect(() => {
-    console.log('currentPage: ',currentPage)
+    console.log('currentPage: ', currentPage)
     console.log('maxData: ', maxData)
   }, [currentPage])
 
-
   return (
-    <div className="bg-white shadow overflow-hidden">
+    <div className="bg-white shadow overflow-hidden p-4">
+      
+      {/* ALERT */}
+      {alertInfo && (
+        <div className="mb-4">
+          <Alert
+            type={alertInfo.type}
+            message={alertInfo.message}
+            onClose={() => setAlertInfo(null)}
+          />
+        </div>
+      )}
+
       <table className="min-w-full text-xs">
         <thead className="bg-white text-[#000000] font-bold">
           <tr>
@@ -172,22 +180,17 @@ export default function TableReport({
             analysisData.slice((currentPage-1) * maxData, maxData * currentPage).map((report: any, index: number) => (
               <tr
                 key={report.id}
-                className={`hover:bg-gray-50 ${
-                  index % 2 === 0 ? "bg-[#FDEEE7]" : "bg-white"
-                }`}
+                className={`hover:bg-gray-50 ${index % 2 === 0 ? "bg-[#FDEEE7]" : "bg-white"}`}
               >
                 <td className="px-3 py-3 whitespace-nowrap text-xs text-[#000000]">
                   {new Date(report.created_at).toLocaleDateString()}
                 </td>
-
                 <td className="px-3 py-3 whitespace-nowrap text-xs font-medium text-[#000000]">
                   {wellData.find((item: any) => item.id === report.well_id)?.name}
                 </td>
-
                 <td className="px-3 py-3 whitespace-nowrap text-xs text-[#000000]">
                   {report.vertical_depth}
                 </td>
-
                 <td className="px-3 py-3 whitespace-nowrap text-xs text-[#000000]">
                   <Image
                     src={
@@ -201,53 +204,34 @@ export default function TableReport({
                     className="w-24 h-16 rounded-lg"
                   />
                 </td>
-
                 <td className="px-3 py-3 text-xs text-[#000000]">
                   <ul className="list-disc pl-4">
                     <li>Siltstone {formatPercent(report.siltstone_prcnt)}%</li>
                     <li>Sandstone {formatPercent(report.sandstone_prcnt)}%</li>
                   </ul>
                 </td>
-
                 <td className="px-3 py-3 whitespace-nowrap text-xs font-medium">
                   <div className="flex items-center space-x-3">
                     <button onClick={() => handleViewReport(report.id)}>
-                      <img
-                        src="/images/detail.png"
-                        alt="Detail"
-                        className="w-5 h-5 hover:opacity-70 transition cursor-pointer"
-                      />
+                      <img src="/images/detail.png" alt="Detail" className="w-5 h-5 hover:opacity-70 transition cursor-pointer" />
                     </button>
-
                     <button onClick={() => handleEditReport(report)}>
-                      <img
-                        src="/images/edit.png"
-                        alt="Edit"
-                        className="w-5 h-5 hover:opacity-70 transition cursor-pointer"
-                      />
+                      <img src="/images/edit.png" alt="Edit" className="w-5 h-5 hover:opacity-70 transition cursor-pointer" />
                     </button>
-
                     <button onClick={() => handleDeleteReport(report.id)}>
-                      <img
-                        src="/images/hapus.png"
-                        alt="Hapus"
-                        className="w-5 h-5 hover:opacity-70 transition cursor-pointer"
-                      />
+                      <img src="/images/hapus.png" alt="Hapus" className="w-5 h-5 hover:opacity-70 transition cursor-pointer" />
                     </button>
                   </div>
                 </td>
               </tr>
             ))}
         </tbody>
-
       </table>
 
-      {/* Delete Modal */}
       {showDeleteModal && (
         <DeleteModal onConfirm={confirmDelete} onCancel={cancelDelete} />
       )}
 
-      {/* Edit Modal */}
       {showEditModal && editData && (
         <EditModal data={editData} wellData={wellData} onConfirm={confirmEdit} onClose={closeEditModal} />
       )}

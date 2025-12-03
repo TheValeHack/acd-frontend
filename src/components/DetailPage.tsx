@@ -31,6 +31,12 @@ export default function DetailPage({ id }: DetailPageProps) {
   // State untuk nama lokasi sumur
   const [wellName, setWellName] = useState<string>("Loading...");
 
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  const openPreview = (src: string) => setPreviewImage(src);
+  const closePreview = () => setPreviewImage(null);
+
+
   // Setelah analysis didapat → fetch well
   useEffect(() => {
     if (!analysis?.data?.well_id) return;
@@ -171,26 +177,52 @@ export default function DetailPage({ id }: DetailPageProps) {
           </section>
 
           {/* Gambar */}
-          <section className="bg-white border-2 border-[#E9EAEB] rounded-xl p-4">
-            <h2 className="text-2xl font-bold text-black">Hasil Segmentasi</h2>
+          <section className="bg-white border-2 border-[#E9EAEB] rounded-xl p-4 dark:text-black">
+            <h2 className="text-2xl font-bold text-black ">Hasil Segmentasi</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
               <div className="text-center">
-                <p className="font-semibold mb-2">Gambar Asli</p>
-                <Image src={
-                        a?.original_image && (a.original_image.startsWith('http://') || a.original_image.startsWith('https://'))
-                            ? a.original_image
-                            : `${process.env.NEXT_PUBLIC_API_URL}/public${a?.original_image}`
-                    } className="mx-auto" alt="Original" width={400} height={300} />
+                <p className="font-semibold mb-2 ">Gambar Asli</p>
+                <Image
+                  src={
+                    a?.original_image && (a.original_image.startsWith('http://') || a.original_image.startsWith('https://'))
+                      ? a.original_image
+                      : `${process.env.NEXT_PUBLIC_API_URL}/public${a?.original_image}`
+                  }
+                  className="mx-auto cursor-pointer"
+                  alt="Original"
+                  width={400}
+                  height={300}
+                  onClick={() =>
+                    openPreview(
+                      a?.original_image && (a.original_image.startsWith('http://') || a.original_image.startsWith('https://'))
+                        ? a.original_image
+                        : `${process.env.NEXT_PUBLIC_API_URL}/public${a?.original_image}`
+                    )
+                  }
+                />
               </div>
 
               <div className="text-center">
-                <p class-name="font-semibold mb-2">Hasil Analisis</p>
-                <Image src={
-                        a?.image && (a.image.startsWith('http://') || a.image.startsWith('https://'))
-                            ? a.image
-                            : `${process.env.NEXT_PUBLIC_API_URL}/public${a?.image}`
-                    } className="mx-auto" alt="Segmented" width={400} height={300} />
+                <p className="font-semibold mb-2 ">Hasil Analisis</p>
+                <Image
+                  src={
+                    a?.image && (a.image.startsWith('http://') || a.image.startsWith('https://'))
+                      ? a.image
+                      : `${process.env.NEXT_PUBLIC_API_URL}/public${a?.image}`
+                  }
+                  className="mx-auto cursor-pointer"
+                  alt="Segmented"
+                  width={400}
+                  height={300}
+                  onClick={() =>
+                    openPreview(
+                      a?.image && (a.image.startsWith('http://') || a.image.startsWith('https://'))
+                        ? a.image
+                        : `${process.env.NEXT_PUBLIC_API_URL}/public${a?.image}`
+                    )
+                  }
+                />
               </div>
             </div>
           </section>
@@ -203,6 +235,34 @@ export default function DetailPage({ id }: DetailPageProps) {
           </button>
         </div>
       </main>
+
+      {previewImage && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+          onClick={closePreview}
+        >
+          <div
+            className="relative w-[90%] h-[90%]"
+          >
+            <Image
+              src={previewImage}
+              alt="Preview"
+              fill
+              className="object-contain rounded-lg shadow-lg"
+            />
+          </div>
+
+          <button
+            className="absolute top-5 right-5 text-white text-3xl font-bold"
+            onClick={closePreview}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+
     </div>
+
   );
 }

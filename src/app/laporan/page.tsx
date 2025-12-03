@@ -25,7 +25,21 @@ export default function LaporanPage() {
 
     useEffect(() => {
         if(!analysisFetch.loading){
-            setAnalysisData(analysisFetch?.data?.data)
+            console.log(analysisFetch?.data?.data)
+           // setAnalysisData(analysisFetch?.data?.data.sort((a: any, b: any) => (new Date(a.created_at)) - (new Date(b.created_at))))
+            setAnalysisData(analysisFetch?.data?.data.sort((a: any, b: any) => {
+            const dateA = new Date(a.created_at).getTime();
+            const dateB = new Date(b.created_at).getTime();
+
+            // Jika salah satu atau keduanya NaN, tempatkan objek yang valid di depan
+            if (isNaN(dateA) || isNaN(dateB)) {
+                if (isNaN(dateA) && !isNaN(dateB)) return 1; // a tidak valid, pindahkan a ke belakang
+                if (!isNaN(dateA) && isNaN(dateB)) return -1; // b tidak valid, pindahkan b ke belakang
+                return 0; // Keduanya tidak valid, jaga urutan
+            }
+
+            return dateB - dateA;
+        }));
         }
     }, [analysisFetch])
 
